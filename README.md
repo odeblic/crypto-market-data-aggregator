@@ -1,1 +1,1 @@
-# crypto-market-data-aggregator
+# Crypto Market Data Aggregator

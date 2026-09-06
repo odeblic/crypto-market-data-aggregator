@@ -12,3 +12,6 @@ target_link_libraries(notional-volume-bands PRIVATE nlohmann_json::nlohmann_json
 
 add_executable(price-bands price-bands.cpp)
 target_link_libraries(price-bands PRIVATE nlohmann_json::nlohmann_json marketdata_lib)
+
+add_executable(viewer viewer.cpp)
+target_link_libraries(viewer PRIVATE nlohmann_json::nlohmann_json Boost::beast OpenSSL::SSL OpenSSL::Crypto)

@@ -179,7 +179,11 @@ private:
     void onMessage(std::string const& str)
     {
         auto const msg = nlohmann::json::parse(str);
-        displayMessage(msg);
+
+        if (config.debug)
+        {
+            displayMessage(msg);
+        }
 
         if (checkMessage(msg))
         {

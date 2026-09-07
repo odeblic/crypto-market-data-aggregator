@@ -5,7 +5,7 @@
 struct ExchangeConfiguration
 {
     std::string host;
-    int port;
-    std::string path;
+    int port{443};
+    std::string path{"/"};
     std::string subscription;
 };

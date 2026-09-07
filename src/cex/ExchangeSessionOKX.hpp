@@ -2,8 +2,8 @@
 
 #include "cex/ExchangeConfiguration.hpp"
 #include "cex/ExchangeSession.hpp"
-#include "cex/MarketUpdate.hpp"
-#include "cex/Utils.hpp"
+#include "core/MarketUpdate.hpp"
+#include "core/Utils.hpp"
 
 #include <nlohmann/json.hpp>
 

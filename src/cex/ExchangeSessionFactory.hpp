@@ -8,9 +8,9 @@
 #include "cex/ExchangeSessionKraken.hpp"
 #include "cex/ExchangeSessionOKX.hpp"
 #include "cex/ExchangeConfiguration.hpp"
-#include "cex/MarketUpdate.hpp"
-#include "cex/Utils.hpp"
 #include "core/MarketDataSink.hpp"
+#include "core/MarketUpdate.hpp"
+#include "core/Utils.hpp"
 
 #include <boost/asio/ssl.hpp>
 

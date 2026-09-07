@@ -8,6 +8,7 @@ set(utf8_range_INSTALL OFF CACHE INTERNAL "")
 set(utf8_range_ENABLE_INSTALL OFF CACHE INTERNAL "")
 
 set(ABSL_PROPAGATE_CXX_STD ON CACHE INTERNAL "")
+set(gRPC_SSL_PROVIDER "package" CACHE STRING "Provider of SSL library" FORCE)
 
 # Add gRPC as a dependency for RPC services
 

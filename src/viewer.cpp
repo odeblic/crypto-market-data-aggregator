@@ -22,7 +22,7 @@ int main(int argc, char * argv[])
     using namespace boost::asio;
     auto const exchange = argv[1];
     io_context ioctx;
-    ssl::context sslctx{ssl::context::tlsv12_client};
+    ssl::context sslctx{ssl::context::tls_client};
     sslctx.set_default_verify_paths();
     MarketDataLogger logger;
     ExchangeSessionFactory factory{ioctx, sslctx, logger};

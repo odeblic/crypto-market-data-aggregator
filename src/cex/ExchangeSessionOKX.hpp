@@ -3,10 +3,10 @@
 #include "ExchangeConfiguration.hpp"
 #include "ExchangeSession.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -52,7 +52,7 @@ struct ExchangeSessionOKX : ExchangeSession
     virtual void processMessage(nlohmann::json const& msg) override
     {
         auto const exchange = Exchange::OKX;
-        auto const ticker = std::string(msg["arg"]["instId"]).substr(0, Ticker().max_size() - 1);
+        auto const ticker = fromString<Ticker>(msg["arg"]["instId"].get<std::string>());
 
         auto makeMarketUpdate = [&](Side side, double price, double quantity)
         {
@@ -60,12 +60,11 @@ struct ExchangeSessionOKX : ExchangeSession
             {
                 .price = price,
                 .quantity = quantity,
+                .ticker = ticker,
                 .side = side,
                 .exchange = exchange,
             };
 
-            std::copy(ticker.cbegin(), ticker.cend(), marketUpdate.ticker.begin());
-            marketUpdate.ticker.back() = '\0';
             return marketUpdate;
         };
 

@@ -9,11 +9,10 @@
 #include "ExchangeSessionOKX.hpp"
 #include "ExchangeConfiguration.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <boost/asio/ssl.hpp>
 
-#include <algorithm>
-#include <cctype>
 #include <functional>
 #include <memory>
 #include <string>
@@ -51,38 +50,7 @@ public:
 
     auto make(std::string exchange) -> std::shared_ptr<ExchangeSession>
     {
-        std::transform(exchange.begin(), exchange.end(), exchange.begin(), [](unsigned char c) {
-            return std::toupper(c);
-        });
-
-        if (exchange == "BINANCE")
-        {
-            return make(Exchange::BINANCE);
-        }
-        else if (exchange == "BITMEX")
-        {
-            return make(Exchange::BITMEX);
-        }
-        else if (exchange == "BYBIT")
-        {
-            return make(Exchange::BYBIT);
-        }
-        else if (exchange == "COINBASE")
-        {
-            return make(Exchange::COINBASE);
-        }
-        else if (exchange == "KRAKEN")
-        {
-            return make(Exchange::KRAKEN);
-        }
-        else if (exchange == "OKX")
-        {
-            return make(Exchange::OKX);
-        }
-        else
-        {
-            return nullptr;
-        }
+        return make(fromString<Exchange>(exchange));
     }
 
 private:

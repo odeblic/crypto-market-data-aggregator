@@ -3,10 +3,10 @@
 #include "ExchangeConfiguration.hpp"
 #include "ExchangeSession.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -49,15 +49,7 @@ struct ExchangeSessionBybit : ExchangeSession
     virtual void processMessage(nlohmann::json const& msg) override
     {
         auto const exchange = Exchange::BYBIT;
-
-        Ticker ticker{};
-
-        if (msg.contains("data") && msg["data"].contains("s"))
-        {
-            std::string const symbol = msg["data"]["s"].get<std::string>();
-            std::size_t const copyLen = std::min(symbol.size(), ticker.size());
-            std::copy_n(symbol.begin(), copyLen, ticker.begin());
-        }
+        auto const ticker = fromString<Ticker>(msg["data"]["s"].get<std::string>());
 
         auto const processSide = [this, &ticker](nlohmann::json const& entries, Side const side)
         {

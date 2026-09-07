@@ -3,10 +3,10 @@
 #include "ExchangeConfiguration.hpp"
 #include "ExchangeSession.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -54,24 +54,17 @@ struct ExchangeSessionCoinbase : ExchangeSession
 
         for (auto const& event : events)
         {
-            std::string product_id = event.at("product_id").get<std::string>();
-            Ticker ticker{};
-            std::copy_n(product_id.begin(), std::min(product_id.size(), ticker.size()), ticker.begin());
-
+            auto const ticker = fromString<Ticker>(event.at("product_id").get<std::string>());
             auto const& updates = event.at("updates");
 
             for (auto const& update : updates)
             {
                 MarketUpdate marketUpdate;
                 marketUpdate.ticker = ticker;
-
-                std::string sideStr = update.at("side").get<std::string>();
-                marketUpdate.side = (sideStr == "bid") ? Side::BID : Side::ASK;
-
+                marketUpdate.side = fromString<Side>(update.at("side").get<std::string>());
                 marketUpdate.price = std::stod(update.at("price_level").get<std::string>());
                 marketUpdate.quantity = std::stod(update.at("new_quantity").get<std::string>());
                 marketUpdate.exchange = exchange;
-
                 publish(marketUpdate);
             }
         }

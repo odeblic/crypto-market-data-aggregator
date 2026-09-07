@@ -3,10 +3,10 @@
 #include "ExchangeConfiguration.hpp"
 #include "ExchangeSession.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 

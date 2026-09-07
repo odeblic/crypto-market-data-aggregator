@@ -3,10 +3,10 @@
 #include "ExchangeConfiguration.hpp"
 #include "ExchangeSession.hpp"
 #include "MarketUpdate.hpp"
+#include "Utils.hpp"
 
 #include <nlohmann/json.hpp>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -57,10 +57,7 @@ struct ExchangeSessionKraken : ExchangeSession
     virtual void processMessage(nlohmann::json const& msg) override
     {
         auto const exchange = Exchange::KRAKEN;
-
-        Ticker ticker{};
-        std::string const tickerStr{msg[3].get<std::string>()};
-        std::copy_n(tickerStr.cbegin(), std::min(tickerStr.size(), ticker.size()), ticker.begin());
+        auto const ticker = fromString<Ticker>(msg[3].get<std::string>());
 
         nlohmann::json const& data{msg[1]};
 

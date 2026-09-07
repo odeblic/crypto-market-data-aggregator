@@ -1,3 +1,5 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(fake-exchange fake-exchange.cpp)
 target_link_libraries(fake-exchange PRIVATE Boost::beast OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json)
 

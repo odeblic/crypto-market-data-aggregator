@@ -1,8 +1,9 @@
 #pragma once
 
-#include "ExchangeConfiguration.hpp"
-#include "MarketUpdate.hpp"
-#include "Utils.hpp"
+#include "cex/ExchangeConfiguration.hpp"
+#include "cex/MarketUpdate.hpp"
+#include "cex/Utils.hpp"
+#include "core/MarketDataSink.hpp"
 
 #include <boost/asio/strand.hpp>
 #include <boost/asio/ssl.hpp>
@@ -11,6 +12,7 @@
 #include <boost/beast/websocket/ssl.hpp>
 #include <nlohmann/json.hpp>
 
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -26,8 +28,8 @@ using tcp = boost::asio::ip::tcp;
 class ExchangeSession : public std::enable_shared_from_this<ExchangeSession>
 {
 public:
-    explicit ExchangeSession(net::io_context& ioctx, ssl::context& sslctx, ExchangeConfiguration const& config)
-    : resolver(net::make_strand(ioctx)), ws(net::make_strand(ioctx), sslctx), config(config)
+    explicit ExchangeSession(net::io_context& ioctx, ssl::context& sslctx, MarketDataSink& sink, ExchangeConfiguration const& config)
+    : resolver(net::make_strand(ioctx)), ws(net::make_strand(ioctx), sslctx), sink(sink), config(config)
     {
     }
 
@@ -51,12 +53,7 @@ public:
 protected:
     void publish(MarketUpdate const& update)
     {
-        std::cout << "ticker: \033[35m" << toString(update.ticker) << "\033[0m "
-                  << "side: " << (update.side == Side::ASK ? "\033[31mASK\033[0m " : "\033[32mBID\033[0m ")
-                  << "price: \033[33m" << std::fixed << std::setprecision(2) << update.price << "\033[0m "
-                  << "quantity: \033[33m" << std::defaultfloat << update.quantity << "\033[0m "
-                  << "source: \033[34m" << toString(update.exchange) << "\033[0m"
-                  << std::endl;
+        sink.get().write(update);
     }
 
 private:
@@ -206,6 +203,7 @@ private:
 
     tcp::resolver resolver;
     websocket::stream<ssl::stream<beast::tcp_stream>> ws;
+    std::reference_wrapper<MarketDataSink> sink;
     ExchangeConfiguration config;
     beast::flat_buffer buffer;
 };

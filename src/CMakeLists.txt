@@ -4,7 +4,7 @@ add_executable(fake-exchange fake-exchange.cpp)
 target_link_libraries(fake-exchange PRIVATE Boost::beast OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json)
 
 add_executable(aggregator aggregator.cpp)
-target_link_libraries(aggregator PRIVATE Boost::beast OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json marketdata_lib)
+target_link_libraries(aggregator PRIVATE Boost::beast Boost::lockfree OpenSSL::SSL OpenSSL::Crypto nlohmann_json::nlohmann_json marketdata_lib)
 
 add_executable(bbo bbo.cpp)
 target_link_libraries(bbo PRIVATE nlohmann_json::nlohmann_json marketdata_lib)

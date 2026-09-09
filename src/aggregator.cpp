@@ -3,6 +3,7 @@
 #include "core/MarketDataLogger.hpp"
 #include "core/MarketDataPublisher.hpp"
 #include "core/MarketDataQueue.hpp"
+#include "rpc/MarketDataService.hpp"
 
 #include <boost/asio/ssl.hpp>
 #include <grpcpp/grpcpp.h>
@@ -35,7 +36,7 @@ int main(int argc, char ** argv)
         throw std::runtime_error("exchange could not be dealt with");
     };
 
-    std::thread consumer([&]()
+    std::thread thread_print([&]()
     {
         while (true)
         {
@@ -48,6 +49,18 @@ int main(int argc, char ** argv)
         }
     });
 
+    std::thread thread_gRPC([&]()
+    {
+        std::string const serverAddress{"0.0.0.0:50051"};
+        MarketDataService service;
+        grpc::ServerBuilder builder;
+        builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
+        builder.RegisterService(&service);
+        std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+        std::cout << "gRPC server listening on " << serverAddress << std::endl;
+        server->Wait();
+    });
+
     makeSession(Exchange::BINANCE)->run();
     makeSession(Exchange::BITMEX)->run();
     makeSession(Exchange::BYBIT)->run();
@@ -55,7 +68,8 @@ int main(int argc, char ** argv)
     makeSession(Exchange::KRAKEN)->run();
     makeSession(Exchange::OKX)->run();
     ioctx.run();
-    consumer.join();
+    thread_print.join();
+    thread_gRPC.join();
     //grpc_shutdown();
     return 0;
 }

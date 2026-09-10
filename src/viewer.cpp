@@ -14,6 +14,7 @@ int main(int argc, char * argv[])
                   << "- BitMEX\n"
                   << "- Bybit\n"
                   << "- Coinbase\n"
+                  << "- Hyperliquid\n"
                   << "- Kraken\n"
                   << "- OKX\n";
         return 1;

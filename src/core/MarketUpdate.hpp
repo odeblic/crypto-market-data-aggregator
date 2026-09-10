@@ -17,6 +17,7 @@ enum class Exchange : char
     BITMEX,
     BYBIT,
     COINBASE,
+    HYPERLIQUID,
     KRAKEN,
     OKX,
 };

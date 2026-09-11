@@ -66,6 +66,7 @@ int main(int argc, char ** argv)
     makeSession(Exchange::BYBIT)->run();
     makeSession(Exchange::COINBASE)->run();
     makeSession(Exchange::HYPERLIQUID)->run();
+    //makeSession(Exchange::INTERNAL)->run();
     makeSession(Exchange::KRAKEN)->run();
     makeSession(Exchange::OKX)->run();
     ioctx.run();

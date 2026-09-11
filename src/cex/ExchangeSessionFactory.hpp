@@ -6,6 +6,7 @@
 #include "cex/ExchangeSessionBybit.hpp"
 #include "cex/ExchangeSessionCoinbase.hpp"
 #include "cex/ExchangeSessionHyperliquid.hpp"
+#include "cex/ExchangeSessionInternal.hpp"
 #include "cex/ExchangeSessionKraken.hpp"
 #include "cex/ExchangeSessionOKX.hpp"
 #include "cex/ExchangeConfiguration.hpp"
@@ -43,6 +44,8 @@ public:
             return std::make_shared<ExchangeSessionCoinbase>(ioctx.get(), sslctx.get(), sink.get(), configCoinbase);
         case Exchange::HYPERLIQUID:
             return std::make_shared<ExchangeSessionHyperliquid>(ioctx.get(), sslctx.get(), sink.get(), configHyperliquid);
+        case Exchange::INTERNAL:
+            return std::make_shared<ExchangeSessionInternal>(ioctx.get(), sslctx.get(), sink.get(), configInternal);
         case Exchange::KRAKEN:
             return std::make_shared<ExchangeSessionKraken>(ioctx.get(), sslctx.get(), sink.get(), configKraken);
         case Exchange::OKX:

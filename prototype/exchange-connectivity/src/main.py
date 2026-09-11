@@ -8,7 +8,7 @@ import utils
 def main():
     parser = argparse.ArgumentParser(description="Subscribe to a crypto exchange and receive market updates.")
     parser.add_argument('--debug', action='store_true', help='Display raw JSON messages')
-    parser.add_argument("--exchange", choices=["binance", "bitmex", "bybit", "coinbase", "hyperliquid", "kraken", "okx"], required=True, help="Name of the exchange to subscribe to")
+    parser.add_argument("--exchange", choices=["binance", "bitmex", "bybit", "coinbase", "hyperliquid", "internal", "kraken", "okx"], required=True, help="Name of the exchange to subscribe to")
     args = parser.parse_args()
     utils.DISPLAY_RAW_MESSAGES = args.debug
     try:

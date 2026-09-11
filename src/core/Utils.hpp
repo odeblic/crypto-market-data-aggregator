@@ -56,6 +56,10 @@ static inline auto fromString(std::string str) -> T
         {
             return Exchange::HYPERLIQUID;
         }
+        else if (str == "INTERNAL")
+        {
+            return Exchange::INTERNAL;
+        }
         else if (str == "KRAKEN")
         {
             return Exchange::KRAKEN;
@@ -115,6 +119,8 @@ static inline auto toString(Exchange exchange) -> std::string
         return "COINBASE";
     case Exchange::HYPERLIQUID:
         return "HYPERLIQUID";
+    case Exchange::INTERNAL:
+        return "INTERNAL";
     case Exchange::KRAKEN:
         return "KRAKEN";
     case Exchange::OKX:

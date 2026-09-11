@@ -21,6 +21,7 @@ enum class Exchange : char
     INTERNAL,
     KRAKEN,
     OKX,
+    MAX,
 };
 
 struct MarketUpdate

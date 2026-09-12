@@ -1,9 +1,9 @@
 #pragma once
 
 #include "cex/ExchangeConfiguration.hpp"
-#include "cex/ExchangeSession.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
+#include "ws/ClientSession.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -24,11 +24,11 @@ inline auto const configHyperliquid = ExchangeConfiguration
 })",
 };
 
-struct ExchangeSessionHyperliquid : ExchangeSession
+struct ExchangeSessionHyperliquid : ClientSession
 {
     template<typename... Args>
     explicit ExchangeSessionHyperliquid(Args&&... args)
-    : ExchangeSession(std::forward<Args>(args)...)
+    : ClientSession(std::forward<Args>(args)...)
     {
     }
 

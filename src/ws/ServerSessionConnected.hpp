@@ -127,7 +127,7 @@ private:
         messages.pop();
     }
 
-    void onPublish(boost::beast::error_code ec, std::size_t bytes_transferred)
+    void onPublish(boost::beast::error_code ec, std::size_t byteCount)
     {
         if (ec)
         {
@@ -135,8 +135,7 @@ private:
             return;
         }
 
-        std::cout << "Publish succeeded (" << bytes_transferred << " bytes transferred)\n";
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::cout << "Publish succeeded (" << byteCount << " bytes transferred)\n";
         doPublish();
     }
 

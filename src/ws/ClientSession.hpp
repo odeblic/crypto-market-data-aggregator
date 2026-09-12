@@ -3,50 +3,52 @@
 #include "cex/ExchangeConfiguration.hpp"
 #include "core/MarketDataSink.hpp"
 #include "core/MarketUpdate.hpp"
-#include "core/Utils.hpp"
 
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/context.hpp>
 #include <boost/asio/strand.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/beast/core.hpp>
+#include <boost/beast/core/bind_handler.hpp>
+#include <boost/beast/core/buffers_to_string.hpp>
+#include <boost/beast/core/tcp_stream.hpp>
+#include <boost/beast/ssl.hpp>
 #include <boost/beast/websocket.hpp>
-#include <boost/beast/websocket/ssl.hpp>
 #include <nlohmann/json.hpp>
 
-#include <functional>
-#include <iomanip>
 #include <iostream>
 #include <memory>
-#include <sstream>
 #include <string>
 
-namespace beast = boost::beast;
-namespace websocket = beast::websocket;
-namespace net = boost::asio;
-namespace ssl = boost::asio::ssl;
-using tcp = boost::asio::ip::tcp;
-
-class ExchangeSession : public std::enable_shared_from_this<ExchangeSession>
+class ClientSession : public std::enable_shared_from_this<ClientSession>
 {
 public:
-    explicit ExchangeSession(net::io_context& ioctx, ssl::context& sslctx, MarketDataSink& sink, ExchangeConfiguration const& config)
-    : resolver(net::make_strand(ioctx)), ws(net::make_strand(ioctx), sslctx), sink(sink), config(config)
+    explicit ClientSession(
+        boost::asio::io_context& ioctx,
+        boost::asio::ssl::context& sslctx,
+        MarketDataSink& sink,
+        ExchangeConfiguration const& config
+    )
+    : resolver(boost::asio::make_strand(ioctx)),
+      ws(boost::asio::make_strand(ioctx), sslctx),
+      sink(sink),
+      config(config)
     {
     }
 
-    virtual ~ExchangeSession() = default;
+    virtual ~ClientSession() = default;
 
     void run()
     {
         if (!SSL_set_tlsext_host_name(ws.next_layer().native_handle(), config.host.c_str()))
         {
-            beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
+            boost::beast::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
             std::cerr << "SNI Error: " << ec.message() << "\n";
             return;
         }
 
         resolver.async_resolve(
             config.host, std::to_string(config.port),
-            beast::bind_front_handler(&ExchangeSession::onResolve, shared_from_this())
+            boost::beast::bind_front_handler(&ClientSession::onResolve, shared_from_this())
         );
     }
 
@@ -57,7 +59,7 @@ protected:
     }
 
 private:
-    void onResolve(beast::error_code ec, tcp::resolver::results_type results)
+    void onResolve(boost::beast::error_code ec, boost::asio::ip::tcp::resolver::results_type results)
     {
         if (ec)
         {
@@ -65,14 +67,14 @@ private:
             return;
         }
 
-        beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
-        beast::get_lowest_layer(ws).async_connect(
+        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        boost::beast::get_lowest_layer(ws).async_connect(
             results,
-            beast::bind_front_handler(&ExchangeSession::onConnect, shared_from_this())
+            boost::beast::bind_front_handler(&ClientSession::onConnect, shared_from_this())
         );
     }
 
-    void onConnect(beast::error_code ec, tcp::resolver::endpoint_type ep)
+    void onConnect(boost::beast::error_code ec, boost::asio::ip::tcp::resolver::endpoint_type ep)
     {
         if (ec)
         {
@@ -80,15 +82,15 @@ private:
             return;
         }
 
-        beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
 
         ws.next_layer().async_handshake(
-            ssl::stream_base::client,
-            beast::bind_front_handler(&ExchangeSession::onHandshakeSSL, shared_from_this())
+            boost::asio::ssl::stream_base::client,
+            boost::beast::bind_front_handler(&ClientSession::onHandshakeSSL, shared_from_this())
         );
     }
 
-    void onHandshakeSSL(beast::error_code ec)
+    void onHandshakeSSL(boost::beast::error_code ec)
     {
         if (ec)
         {
@@ -96,8 +98,8 @@ private:
             return;
         }
 
-        beast::get_lowest_layer(ws).expires_never();
-        ws.set_option(websocket::stream_base::timeout::suggested(beast::role_type::client));
+        boost::beast::get_lowest_layer(ws).expires_never();
+        ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
 
         std::cout << "Host: " << config.host << "\n";
         std::cout << "Port: " << config.port << "\n";
@@ -106,11 +108,11 @@ private:
 
         ws.async_handshake(
             config.host, config.path,
-            beast::bind_front_handler(&ExchangeSession::onHandshake, shared_from_this()
+            boost::beast::bind_front_handler(&ClientSession::onHandshake, shared_from_this()
         ));
     }
 
-    void onHandshake(beast::error_code ec)
+    void onHandshake(boost::beast::error_code ec)
     {
         if (ec)
         {
@@ -134,22 +136,20 @@ private:
     void doSubscribe()
     {
         ws.async_write(
-            net::buffer(config.subscription),
-            beast::bind_front_handler(&ExchangeSession::onSubscribe, shared_from_this()
+            boost::asio::buffer(config.subscription),
+            boost::beast::bind_front_handler(&ClientSession::onSubscribe, shared_from_this()
         ));
     }
 
-    void onSubscribe(beast::error_code ec, std::size_t bytes_transferred)
+    void onSubscribe(boost::beast::error_code ec, std::size_t byteCount)
     {
-        boost::ignore_unused(bytes_transferred);
-
         if (ec)
         {
-            std::cerr << "Write failed: " << ec.message() << "\n";
+            std::cerr << "Subscription failed: " << ec.message() << "\n";
             return;
         }
 
-        std::cout << "Subscription message sent successfully. Waiting for incoming stream...\n";
+        std::cout << "Subscription succeeded (" << byteCount << " bytes transferred)\n";
         doRead();
     }
 
@@ -157,20 +157,19 @@ private:
     {
         ws.async_read(
             buffer,
-            beast::bind_front_handler(&ExchangeSession::onRead, shared_from_this())
+            boost::beast::bind_front_handler(&ClientSession::onRead, shared_from_this())
         );
     }
 
-    void onRead(beast::error_code ec, std::size_t bytes_transferred)
+    void onRead(boost::beast::error_code ec, std::size_t byteCount)
     {
-        boost::ignore_unused(bytes_transferred);
-
         if (ec)
         {
-            std::cerr << "Read error: " << ec.message() << "\n";
+            std::cerr << "Read failed: " << ec.message() << "\n";
             return;
         }
 
+        std::cout << "Read succeeded (" << byteCount << " bytes transferred)\n";
         onMessage(boost::beast::buffers_to_string(buffer.data()));
         buffer.clear();
         doRead();
@@ -205,9 +204,9 @@ private:
     {
     }
 
-    tcp::resolver resolver;
-    websocket::stream<ssl::stream<beast::tcp_stream>> ws;
+    boost::asio::ip::tcp::resolver resolver;
+    boost::beast::websocket::stream<boost::asio::ssl::stream<boost::beast::tcp_stream>> ws;
     std::reference_wrapper<MarketDataSink> sink;
     ExchangeConfiguration config;
-    beast::flat_buffer buffer;
+    boost::beast::flat_buffer buffer;
 };

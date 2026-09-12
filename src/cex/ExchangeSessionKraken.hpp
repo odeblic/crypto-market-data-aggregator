@@ -1,9 +1,9 @@
 #pragma once
 
 #include "cex/ExchangeConfiguration.hpp"
-#include "cex/ExchangeSession.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
+#include "ws/ClientSession.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -26,11 +26,11 @@ inline auto const configKraken = ExchangeConfiguration
 })",
 };
 
-struct ExchangeSessionKraken : ExchangeSession
+struct ExchangeSessionKraken : ClientSession
 {
     template<typename... Args>
     explicit ExchangeSessionKraken(Args&&... args)
-    : ExchangeSession(std::forward<Args>(args)...)
+    : ClientSession(std::forward<Args>(args)...)
     {
     }
 

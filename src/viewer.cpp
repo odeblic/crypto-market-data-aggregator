@@ -1,8 +1,6 @@
-#include "cex/ExchangeSessionFactory.hpp"
 #include "core/MarketDataLogger.hpp"
-
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ssl.hpp>
+#include "core/Utils.hpp"
+#include "ws/WebsocketClient.hpp"
 
 #include <iostream>
 
@@ -22,22 +20,10 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    using namespace boost::asio;
-    auto const exchange = argv[1];
-    io_context ioctx;
-    ssl::context sslctx{ssl::context::tls_client};
-    sslctx.set_default_verify_paths();
+    auto const exchange = std::string(argv[1]);
     MarketDataLogger logger;
-    ExchangeSessionFactory factory{ioctx, sslctx, logger};
-    auto session = factory.make(exchange);
-
-    if (!session)
-    {
-        std::cerr << "This exchange could not be dealt with or is not supported.\n";
-        return 1;
-    }
-
-    session->run();
-    ioctx.run();
+    WebsocketClient client{logger};
+    client.connect(fromString<Exchange>(exchange));
+    client.run();
     return 0;
 }

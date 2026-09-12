@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cex/ExchangeSession.hpp"
 #include "cex/ExchangeSessionBinance.hpp"
 #include "cex/ExchangeSessionBitMEX.hpp"
 #include "cex/ExchangeSessionBybit.hpp"
@@ -13,24 +12,24 @@
 #include "core/MarketDataSink.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
+#include "ws/ClientSession.hpp"
 
-#include <boost/asio/ssl.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ssl/context.hpp>
 
 #include <functional>
 #include <memory>
 #include <string>
 
-namespace net = boost::asio;
-
 class ExchangeSessionFactory
 {
 public:
-    explicit ExchangeSessionFactory(net::io_context& ioctx, ssl::context& sslctx, MarketDataSink& sink)
+    explicit ExchangeSessionFactory(boost::asio::io_context& ioctx, boost::asio::ssl::context& sslctx, MarketDataSink& sink)
     : ioctx(ioctx), sslctx(sslctx), sink(sink)
     {
     }
 
-    auto make(Exchange exchange) -> std::shared_ptr<ExchangeSession>
+    auto make(Exchange exchange) -> std::shared_ptr<ClientSession>
     {
         switch (exchange)
         {
@@ -55,13 +54,13 @@ public:
         }
     }
 
-    auto make(std::string exchange) -> std::shared_ptr<ExchangeSession>
+    auto make(std::string exchange) -> std::shared_ptr<ClientSession>
     {
         return make(fromString<Exchange>(exchange));
     }
 
 private:
-    std::reference_wrapper<net::io_context> ioctx;
-    std::reference_wrapper<ssl::context> sslctx;
+    std::reference_wrapper<boost::asio::io_context> ioctx;
+    std::reference_wrapper<boost::asio::ssl::context> sslctx;
     std::reference_wrapper<MarketDataSink> sink;
 };

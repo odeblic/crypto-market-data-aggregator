@@ -12,6 +12,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <thread>
 
 namespace beast = boost::beast;
@@ -288,16 +289,41 @@ private:
     tcp::acceptor acceptor;
 };
 
-int main()
+class WebsocketServer
 {
-    auto const address{net::ip::make_address("127.0.0.1")};
-    unsigned short const port{8080};
-    net::io_context ioc;
-    ssl::context ctx{ssl::context::tls_server};
-    ctx.use_certificate_chain_file("server.crt");
-    ctx.use_private_key_file("server.key", ssl::context::pem);
-    std::make_shared<Listener>(ioc, ctx, tcp::endpoint{address, port})->run();
-    std::cout << "Listening on: " << address << "\n";
-    ioc.run();
+public:
+    WebsocketServer(
+        std::string_view host,
+        unsigned short port,
+        std::string_view certificateFile,
+        std::string_view keyFile
+    )
+    : address(boost::asio::ip::make_address(host.data())),
+      port(port),
+      ioctx(),
+      sslctx(boost::asio::ssl::context::tls_server)
+    {
+        sslctx.use_certificate_chain_file(certificateFile.data());
+        sslctx.use_private_key_file(keyFile.data(), boost::asio::ssl::context::pem);
+    }
+
+    void run()
+    {
+        std::make_shared<Listener>(ioctx, sslctx, boost::asio::ip::tcp::endpoint{address, port})->run();
+        ioctx.run();
+    }
+
+private:
+    boost::asio::ip::address address;
+    boost::asio::ip::port_type port{0};
+    boost::asio::io_context ioctx;
+    boost::asio::ssl::context sslctx;
+};
+
+int main(int argc, char * argv[])
+{
+    auto server = WebsocketServer{"127.0.0.1", 8080, "certificate.pem", "private-key.pem"};
+    std::cout << "Listening on: 127.0.0.1:8080\n";
+    server.run();
     return EXIT_SUCCESS;
 }

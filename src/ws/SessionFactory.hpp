@@ -21,10 +21,10 @@
 #include <memory>
 #include <string>
 
-class ExchangeSessionFactory
+class SessionFactory
 {
 public:
-    explicit ExchangeSessionFactory(boost::asio::io_context& ioctx, boost::asio::ssl::context& sslctx, MarketDataSink& sink)
+    explicit SessionFactory(boost::asio::io_context& ioctx, boost::asio::ssl::context& sslctx, MarketDataSink& sink)
     : ioctx(ioctx), sslctx(sslctx), sink(sink)
     {
     }

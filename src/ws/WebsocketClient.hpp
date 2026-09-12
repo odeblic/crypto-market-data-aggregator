@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cex/ExchangeSessionFactory.hpp"
+#include "ws/SessionFactory.hpp"
 #include "core/MarketDataSink.hpp"
 #include "ws/ClientSession.hpp"
 
@@ -42,5 +42,5 @@ public:
 private:
     boost::asio::io_context ioctx;
     boost::asio::ssl::context sslctx;
-    ExchangeSessionFactory factory;
+    SessionFactory factory;
 };

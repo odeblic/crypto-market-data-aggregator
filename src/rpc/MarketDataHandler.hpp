@@ -100,31 +100,32 @@ protected:
         std::cout << "+--------------------+--------------------+\n";
     }
 
-    static auto makeBook(marketdata::Snapshot const& snapshot) -> std::unique_ptr<Book>
+    static auto makeBook(marketdata::Snapshot const& snapshot) -> Book
     {
-        auto book = std::make_unique<Book>();
+        auto book = Book{};
 
-        for (const auto& ask : snapshot.asks())
+        for (auto const& ask : snapshot.asks())
         {
-            book->ask.push_back(Book::Quote{ask.price(), ask.quantity()});
+            book.ask.emplace_back(ask.price(), ask.quantity());
         }
 
-        for (const auto& bid : snapshot.bids())
+        for (auto const& bid : snapshot.bids())
         {
-            book->bid.push_back(Book::Quote{bid.price(), bid.quantity()});
+            book.bid.emplace_back(bid.price(), bid.quantity());
         }
 
         return book;
     }
 
-    static auto makeMarketUpdate(marketdata::Update const& update) -> std::unique_ptr<MarketUpdate>
+    static auto makeMarketUpdate(marketdata::Update const& update) -> MarketUpdate
     {
-        auto marketUpdate = std::make_unique<MarketUpdate>();
-        marketUpdate->price = update.price();
-        marketUpdate->quantity = update.quantity();
-        marketUpdate->ticker = fromString<Ticker>(update.symbol());
-        marketUpdate->side = marketdata::Side::BID ? Side::BID : Side::ASK;
-        marketUpdate->exchange = Exchange::UNKNOWN;
-        return marketUpdate;
+        return
+        {
+            .price = update.price(),
+            .quantity = update.quantity(),
+            .ticker = fromString<Ticker>(update.symbol()),
+            .side = marketdata::Side::BID ? Side::BID : Side::ASK,
+            .exchange = Exchange::UNKNOWN,
+        };
     }
 };

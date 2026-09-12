@@ -16,9 +16,9 @@ public:
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
         //printSnapshot(snapshot);
-        auto book = makeBook(snapshot);
-        auto syntheticBook = compute(*book);
-        printBook(*syntheticBook);
+        auto originalBook = makeBook(snapshot);
+        auto syntheticBook = compute(originalBook);
+        printBook(syntheticBook);
     }
 
     virtual void onUpdate(marketdata::Update const& update) const override
@@ -27,14 +27,14 @@ public:
     }
 
 private:
-    static auto compute(Book const& book) -> std::unique_ptr<Book>
+    static auto compute(Book const& book) -> Book
     {
-        auto priceBands = std::make_unique<Book>();
+        auto priceBands = Book{};
 
         auto calculateAndAdd = [&](Side side, int bps)
         {
             auto& quotes = (side == Side::ASK ? book.ask : book.bid);
-            auto& bands = (side == Side::ASK ? priceBands->ask : priceBands->bid);
+            auto& bands = (side == Side::ASK ? priceBands.ask : priceBands.bid);
 
             if (auto band = calculateBand(quotes, side, bps); band)
             {

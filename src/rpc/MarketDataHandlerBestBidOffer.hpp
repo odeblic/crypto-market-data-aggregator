@@ -16,9 +16,9 @@ public:
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
         //printSnapshot(snapshot);
-        auto book = makeBook(snapshot);
-        auto syntheticBook = compute(*book);
-        printBook(*syntheticBook);
+        auto originalBook = makeBook(snapshot);
+        auto syntheticBook = compute(originalBook);
+        printBook(syntheticBook);
     }
 
     virtual void onUpdate(marketdata::Update const& update) const override
@@ -27,11 +27,11 @@ public:
     }
 
 private:
-    static auto compute(Book const& book) -> std::unique_ptr<Book>
+    static auto compute(Book const& book) -> Book
     {
         auto bestBidOffer = book;
         bestBidOffer.ask.resize(1);
         bestBidOffer.bid.resize(1);
-        return std::make_unique<Book>(bestBidOffer);
+        return bestBidOffer;
     }
 };

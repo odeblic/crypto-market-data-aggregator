@@ -53,6 +53,11 @@ private:
 
     static auto calculateBand(std::vector<Book::Quote> const& quotes, Side side, int bps) -> std::optional<Book::Quote>
     {
+        if (quotes.empty())
+        {
+            return std::nullopt;
+        }
+
         double const bestPrice = quotes[0].price;
         double const shiftedPrice = bestPrice * (1 + (side == Side::ASK ? bps / 10'000. : -bps / 10'000.));
         double cumulatedQuantity = 0.0;
@@ -66,7 +71,7 @@ private:
             }
             else
             {
-                return std::nullopt;
+                break;
             }
         }
 

@@ -113,6 +113,7 @@ private:
             messages.push(message);
         };
 
+        addMessage("ask", 78001.00, 4.0000);
         addMessage("ask", 78000.75, 3.0000);
         addMessage("ask", 78000.60, 2.0000);
         addMessage("ask", 78000.45, 1.0000);

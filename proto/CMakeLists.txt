@@ -9,10 +9,10 @@ add_custom_command(
     COMMAND $<TARGET_FILE:protobuf::protoc>
     ARGS --grpc_out ${CMAKE_CURRENT_BINARY_DIR}
          --cpp_out ${CMAKE_CURRENT_BINARY_DIR}
-         --plugin=protoc-gen-grpc=$<TARGET_FILE:grpc_cpp_plugin>
+         --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
          -I "${CMAKE_CURRENT_SOURCE_DIR}"
          "${PROTO_FILE}"
-    DEPENDS "${PROTO_FILE}" protobuf::protoc grpc_cpp_plugin
+    DEPENDS "${PROTO_FILE}" protobuf::protoc gRPC::grpc_cpp_plugin
     VERBATIM
 )
 

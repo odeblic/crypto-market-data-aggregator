@@ -4,17 +4,28 @@ project(crypto-market-data-aggregator LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 find_package(OpenSSL REQUIRED)
 
-set(FETCHCONTENT_QUIET OFF)
+# Alternative in case of issues to install dependencies
+set(USE_FETCH_CONTENT OFF)
 
-include(FetchContent)
-include(boost)
-include(catch2)
-include(grpc)
-include(json)
+if(USE_FETCH_CONTENT)
+    message(STATUS "Will use FetchContent and build all dependencies!")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    include(FetchContent)
+    include(boost)
+    include(catch2)
+    include(grpc)
+    include(json)
+else()
+    message(STATUS "Will not use FetchContent but rely on installed dependencies.")
+    find_package(Threads REQUIRED)
+    find_package(nlohmann_json REQUIRED)
+    find_package(Boost REQUIRED COMPONENTS system)
+    find_package(Protobuf REQUIRED)
+    find_package(gRPC REQUIRED)
+    find_package(Catch2 REQUIRED)
+endif()
 
 enable_testing()
 

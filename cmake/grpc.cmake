@@ -13,9 +13,9 @@ set(gRPC_SSL_PROVIDER "package" CACHE STRING "Provider of SSL library" FORCE)
 # Add gRPC as a dependency for RPC services
 
 FetchContent_Declare(
-  gRPC
-  GIT_REPOSITORY https://github.com/grpc/grpc
-  GIT_TAG        v1.83.1
+    gRPC
+    GIT_REPOSITORY https://github.com/grpc/grpc
+    GIT_TAG        v1.83.1
 )
 
 FetchContent_MakeAvailable(gRPC)

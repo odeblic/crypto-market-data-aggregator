@@ -44,7 +44,7 @@ public:
 
     void updateBook(std::unique_ptr<Book> book, std::string symbol = "BTC/USDT")
     {
-        std::lock_guard<std::mutex> guard(mutex);
+        std::scoped_lock<std::mutex> lock(mutex);
         this->symbol = symbol;
         this->book = std::move(book);
     }
@@ -52,7 +52,7 @@ public:
 private:
     auto createSnapshot() const -> marketdata::Snapshot
     {
-        std::lock_guard<std::mutex> guard(mutex);
+        std::scoped_lock<std::mutex> lock(mutex);
         marketdata::Snapshot snapshot;
         snapshot.set_symbol(symbol);
 

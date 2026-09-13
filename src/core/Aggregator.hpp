@@ -53,7 +53,7 @@ public:
 
     void onUpdate(MarketUpdate const& update)
     {
-        std::lock_guard<std::mutex> guard(mutex);
+        std::scoped_lock<std::mutex> lock(mutex);
 
         if (update.side == Side::ASK)
         {
@@ -80,7 +80,7 @@ public:
     auto generateBook() const -> std::unique_ptr<Book>
     {
         auto book = std::make_unique<Book>();
-        std::lock_guard<std::mutex> guard(mutex);
+        std::scoped_lock<std::mutex> lock(mutex);
 
         for (auto const& [price, quantities] : priceLevels.ask)
         {

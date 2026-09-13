@@ -18,6 +18,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <utility>
 
 class ClientSession : public std::enable_shared_from_this<ClientSession>
 {
@@ -26,12 +27,12 @@ public:
         boost::asio::io_context& ioctx,
         boost::asio::ssl::context& sslctx,
         MarketDataSink& sink,
-        ExchangeConfiguration const& config
+        ExchangeConfiguration config
     )
     : resolver(boost::asio::make_strand(ioctx)),
       ws(boost::asio::make_strand(ioctx), sslctx),
       sink(sink),
-      config(config)
+      config(std::move(config))
     {
     }
 

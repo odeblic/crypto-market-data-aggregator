@@ -28,7 +28,8 @@ public:
 
     void run()
     {
-        std::make_shared<ServerSessionListening>(ioctx, sslctx, boost::asio::ip::tcp::endpoint{address, port})->run();
+        auto endpoint = boost::asio::ip::tcp::endpoint{address, port};
+        std::make_shared<ServerSessionListening>(ioctx, sslctx, endpoint)->run();
         ioctx.run();
     }
 

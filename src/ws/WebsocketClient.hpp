@@ -1,15 +1,11 @@
 #pragma once
 
-#include "ws/SessionFactory.hpp"
 #include "core/MarketDataSink.hpp"
 #include "ws/ClientSession.hpp"
+#include "ws/SessionFactory.hpp"
 
 #include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/context.hpp>
-
-#include <string_view>
-#include <stdexcept>
 
 class WebsocketClient
 {
@@ -25,12 +21,6 @@ public:
     void connect(Exchange exchange)
     {
         auto session = factory.make(exchange);
-
-        if (!session)
-        {
-            throw std::runtime_error("exchange could not be dealt with");
-        }
-
         session->run();
     }
 

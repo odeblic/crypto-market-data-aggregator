@@ -19,7 +19,9 @@
 
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <utility>
 
 class SessionFactory
 {
@@ -34,32 +36,38 @@ public:
         switch (exchange)
         {
         case Exchange::BINANCE:
-            return std::make_shared<ExchangeSessionBinance>(ioctx.get(), sslctx.get(), sink.get(), configBinance);
+            return makeExchangeSession<ExchangeSessionBinance>(configBinance);
         case Exchange::BITMEX:
-            return std::make_shared<ExchangeSessionBitMEX>(ioctx.get(), sslctx.get(), sink.get(), configBitMEX);
+            return makeExchangeSession<ExchangeSessionBitMEX>(configBitMEX);
         case Exchange::BYBIT:
-            return std::make_shared<ExchangeSessionBybit>(ioctx.get(), sslctx.get(), sink.get(), configBybit);
+            return makeExchangeSession<ExchangeSessionBybit>(configBybit);
         case Exchange::COINBASE:
-            return std::make_shared<ExchangeSessionCoinbase>(ioctx.get(), sslctx.get(), sink.get(), configCoinbase);
+            return makeExchangeSession<ExchangeSessionCoinbase>(configCoinbase);
         case Exchange::HYPERLIQUID:
-            return std::make_shared<ExchangeSessionHyperliquid>(ioctx.get(), sslctx.get(), sink.get(), configHyperliquid);
+            return makeExchangeSession<ExchangeSessionHyperliquid>(configHyperliquid);
         case Exchange::INTERNAL:
-            return std::make_shared<ExchangeSessionInternal>(ioctx.get(), sslctx.get(), sink.get(), configInternal);
+            return makeExchangeSession<ExchangeSessionInternal>(configInternal);
         case Exchange::KRAKEN:
-            return std::make_shared<ExchangeSessionKraken>(ioctx.get(), sslctx.get(), sink.get(), configKraken);
+            return makeExchangeSession<ExchangeSessionKraken>(configKraken);
         case Exchange::OKX:
-            return std::make_shared<ExchangeSessionOKX>(ioctx.get(), sslctx.get(), sink.get(), configOKX);
+            return makeExchangeSession<ExchangeSessionOKX>(configOKX);
         default:
-            return nullptr;
+            throw std::runtime_error("exchange could not be dealt with");
         }
     }
 
     auto make(std::string exchange) -> std::shared_ptr<ClientSession>
     {
-        return make(fromString<Exchange>(exchange));
+        return make(fromString<Exchange>(std::move(exchange)));
     }
 
 private:
+    template <typename T>
+    auto makeExchangeSession(ExchangeConfiguration config) -> std::shared_ptr<ClientSession>
+    {
+        return std::make_shared<T>(ioctx.get(), sslctx.get(), sink.get(), std::move(config));
+    }
+
     std::reference_wrapper<boost::asio::io_context> ioctx;
     std::reference_wrapper<boost::asio::ssl::context> sslctx;
     std::reference_wrapper<MarketDataSink> sink;

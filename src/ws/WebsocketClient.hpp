@@ -18,9 +18,9 @@ public:
         sslctx.set_default_verify_paths();
     }
 
-    void connect(Exchange exchange)
+    void connect(Exchange exchange, ExchangeConfiguration config)
     {
-        auto session = factory.make(exchange);
+        auto session = factory.make(exchange, std::move(config));
         session->run();
     }
 

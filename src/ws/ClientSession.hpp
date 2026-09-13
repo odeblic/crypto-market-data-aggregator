@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cex/ExchangeConfiguration.hpp"
+#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketDataSink.hpp"
 #include "core/MarketUpdate.hpp"
 
@@ -123,7 +123,7 @@ private:
 
         std::cout << "Connected to live market data feed!\n";
 
-        if (config.subscription.length() > 0)
+        if (!config.subscription.empty())
         {
             std::cout << "Subscription is required.\n";
             doSubscribe();
@@ -137,7 +137,7 @@ private:
     void doSubscribe()
     {
         ws.async_write(
-            boost::asio::buffer(config.subscription),
+            boost::asio::buffer(config.subscription.dump()),
             boost::beast::bind_front_handler(&ClientSession::onSubscribe, shared_from_this()
         ));
     }
@@ -180,10 +180,7 @@ private:
     {
         auto const msg = nlohmann::json::parse(str);
 
-        if (config.debug)
-        {
-            displayMessage(msg);
-        }
+        displayMessage(msg);
 
         if (checkMessage(msg))
         {

@@ -1,3 +1,6 @@
+#include "cfg/AggregatorConfiguration.hpp"
+#include "cfg/Loader.hpp"
+#include "core/Arguments.hpp"
 #include "core/Aggregator.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/MarketDataLogger.hpp"
@@ -15,6 +18,9 @@
 
 int main(int argc, char ** argv)
 {
+    auto arguments = Arguments{argc, argv};
+    auto path = arguments.getConfigFilePath();
+    auto const config = loadConfigFromFile<AggregatorConfiguration>(path);
     MarketDataQueue queue;
     MarketDataPublisher publisher{queue};
     MarketDataLogger logger;
@@ -49,7 +55,7 @@ int main(int argc, char ** argv)
     std::jthread thread_gRPC([&]()
     {
         grpc::ServerBuilder builder;
-        std::string const serverAddress{"0.0.0.0:50051"};
+        std::string const serverAddress{config.service.host + ":" + std::to_string(config.service.port)};
         builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
         std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
@@ -57,14 +63,13 @@ int main(int argc, char ** argv)
         server->Wait();
     });
 
-    client.connect(Exchange::BINANCE);
-    client.connect(Exchange::BITMEX);
-    client.connect(Exchange::BYBIT);
-    client.connect(Exchange::COINBASE);
-    client.connect(Exchange::HYPERLIQUID);
-    //client.connect(Exchange::INTERNAL);
-    client.connect(Exchange::KRAKEN);
-    client.connect(Exchange::OKX);
+    client.connect(Exchange::BINANCE, config.exchanges.at("binance"));
+    client.connect(Exchange::BITMEX, config.exchanges.at("bitmex"));
+    client.connect(Exchange::BYBIT, config.exchanges.at("bybit"));
+    client.connect(Exchange::COINBASE, config.exchanges.at("coinbase"));
+    client.connect(Exchange::HYPERLIQUID, config.exchanges.at("hyperliquid"));
+    //client.connect(Exchange::INTERNAL, config.exchanges.at("internal"));
+    client.connect(Exchange::KRAKEN, config.exchanges.at("kraken"));
+    client.connect(Exchange::OKX, config.exchanges.at("okx"));
     client.run();
-    return 0;
 }

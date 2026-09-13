@@ -7,7 +7,7 @@
 struct ExchangeConfiguration
 {
     std::string host;
-    int port{443};
+    unsigned short port{443};
     std::string path{"/"};
     nlohmann::json subscription;
 };

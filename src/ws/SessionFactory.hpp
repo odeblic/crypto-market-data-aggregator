@@ -8,7 +8,7 @@
 #include "cex/ExchangeSessionInternal.hpp"
 #include "cex/ExchangeSessionKraken.hpp"
 #include "cex/ExchangeSessionOKX.hpp"
-#include "cex/ExchangeConfiguration.hpp"
+#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketDataSink.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
@@ -31,34 +31,34 @@ public:
     {
     }
 
-    auto make(Exchange exchange) -> std::shared_ptr<ClientSession>
+    auto make(Exchange exchange, ExchangeConfiguration config) -> std::shared_ptr<ClientSession>
     {
         switch (exchange)
         {
         case Exchange::BINANCE:
-            return makeExchangeSession<ExchangeSessionBinance>(configBinance);
+            return makeExchangeSession<ExchangeSessionBinance>(std::move(config));
         case Exchange::BITMEX:
-            return makeExchangeSession<ExchangeSessionBitMEX>(configBitMEX);
+            return makeExchangeSession<ExchangeSessionBitMEX>(std::move(config));
         case Exchange::BYBIT:
-            return makeExchangeSession<ExchangeSessionBybit>(configBybit);
+            return makeExchangeSession<ExchangeSessionBybit>(std::move(config));
         case Exchange::COINBASE:
-            return makeExchangeSession<ExchangeSessionCoinbase>(configCoinbase);
+            return makeExchangeSession<ExchangeSessionCoinbase>(std::move(config));
         case Exchange::HYPERLIQUID:
-            return makeExchangeSession<ExchangeSessionHyperliquid>(configHyperliquid);
+            return makeExchangeSession<ExchangeSessionHyperliquid>(std::move(config));
         case Exchange::INTERNAL:
-            return makeExchangeSession<ExchangeSessionInternal>(configInternal);
+            return makeExchangeSession<ExchangeSessionInternal>(std::move(config));
         case Exchange::KRAKEN:
-            return makeExchangeSession<ExchangeSessionKraken>(configKraken);
+            return makeExchangeSession<ExchangeSessionKraken>(std::move(config));
         case Exchange::OKX:
-            return makeExchangeSession<ExchangeSessionOKX>(configOKX);
+            return makeExchangeSession<ExchangeSessionOKX>(std::move(config));
         default:
             throw std::runtime_error("exchange could not be dealt with");
         }
     }
 
-    auto make(std::string exchange) -> std::shared_ptr<ClientSession>
+    auto make(std::string exchange, ExchangeConfiguration config) -> std::shared_ptr<ClientSession>
     {
-        return make(fromString<Exchange>(std::move(exchange)));
+        return make(fromString<Exchange>(std::move(exchange)), std::move(config));
     }
 
 private:

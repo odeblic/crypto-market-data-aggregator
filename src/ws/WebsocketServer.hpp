@@ -2,6 +2,7 @@
 
 #include "ws/ServerSessionListening.hpp"
 
+#include <boost/asio/ip/basic_endpoint.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/context.hpp>
@@ -17,7 +18,7 @@ public:
         std::string_view certificateFile,
         std::string_view keyFile
     )
-    : address(boost::asio::ip::make_address(host.data())),
+    : host(host),
       port(port),
       ioctx(),
       sslctx(boost::asio::ssl::context::tls_server)
@@ -28,14 +29,15 @@ public:
 
     void run()
     {
+        auto address = boost::asio::ip::make_address(host.data());
         auto endpoint = boost::asio::ip::tcp::endpoint{address, port};
         std::make_shared<ServerSessionListening>(ioctx, sslctx, endpoint)->run();
         ioctx.run();
     }
 
 private:
-    boost::asio::ip::address address;
-    boost::asio::ip::port_type port{0};
+    std::string host;
+    unsigned short port{0};
     boost::asio::io_context ioctx;
     boost::asio::ssl::context sslctx;
 };

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  aggregator:
+    image: aggregator
+    container_name: aggregator
+    ports:
+      - "50051:50051"
+    networks:
+      - trading-net
+
+  best-bid-offer:
+    image: best-bid-offer
+    container_name: best-bid-offer
+    depends_on:
+      - aggregator
+    networks:
+      - trading-net
+
+  notional-volume-bands:
+    image: notional-volume-bands
+    container_name: notional-volume-bands
+    depends_on:
+      - aggregator
+    networks:
+      - trading-net
+
+  price-bands:
+    image: price-bands
+    container_name: price-bands
+    depends_on:
+      - aggregator
+    networks:
+      - trading-net
+
+networks:
+  trading-net:
+    driver: bridge

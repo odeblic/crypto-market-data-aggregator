@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,22 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configOKX = ExchangeConfiguration
-{
-    .host = "ws.okx.com",
-    .port = 8443,
-    .path = "/ws/v5/public",
-    .subscription = R"({
-    "op": "subscribe",
-    "args": [
-        {
-            "channel": "books",
-            "instId": "BTC-USDT"
-        }
-    ]
-})",
-};
 
 struct ExchangeSessionOKX : ClientSession
 {

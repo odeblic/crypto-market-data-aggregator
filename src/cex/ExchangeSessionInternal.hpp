@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,14 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configInternal = ExchangeConfiguration
-{
-    .host = "127.0.0.1",
-    .port = 8080,
-    .path = "/marketdata/btcusdt",
-    .subscription = "",
-};
 
 struct ExchangeSessionInternal : ClientSession
 {

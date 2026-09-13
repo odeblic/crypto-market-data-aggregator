@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,20 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configCoinbase = ExchangeConfiguration
-{
-    .host = "advanced-trade-ws.coinbase.com",
-    .port = 443,
-    .path = "/",
-    .subscription = R"({
-    "type": "subscribe",
-    "channel": "level2",
-    "product_ids": [
-        "BTC-USDT"
-    ]
-})",
-};
 
 struct ExchangeSessionCoinbase : ClientSession
 {

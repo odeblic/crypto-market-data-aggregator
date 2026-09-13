@@ -1,0 +1,97 @@
+{
+    "exchanges": {
+        "binance": {
+            "host": "stream.binance.com",
+            "port": 9443,
+            "path": "/ws/btcusdt@depth@100ms",
+            "subscription": {
+                "method": "SUBSCRIBE",
+                "params": [
+                    "btcusdt@depth20@100ms"
+                ],
+                "id": 1
+            }
+        },
+        "bitmex": {
+            "host": "ws.bitmex.com",
+            "port": 443,
+            "path": "/realtime",
+            "subscription": {
+                "op": "subscribe",
+                "args": [
+                    "orderBookL2_25:XBTUSDT"
+                ]
+            }
+        },
+        "bybit": {
+            "host": "stream.bybit.com",
+            "port": 443,
+            "path": "/v5/public/linear",
+            "subscription": {
+                "op": "subscribe",
+                "args": [
+                    "orderbook.50.BTCUSDT"
+                ]
+            }
+        },
+        "coinbase": {
+            "host": "advanced-trade-ws.coinbase.com",
+            "port": 443,
+            "path": "/",
+            "subscription": {
+                "type": "subscribe",
+                "channel": "level2",
+                "product_ids": [
+                    "BTC-USDT"
+                ]
+            }
+        },
+        "hyperliquid": {
+            "host": "api.hyperliquid.xyz",
+            "port": 443,
+            "path": "/ws",
+            "subscription": {
+                "method": "subscribe",
+                "subscription": {
+                    "type": "l2Book",
+                    "coin": "BTC"
+                }
+            }
+        },
+        "internal": {
+            "host": "127.0.0.1",
+            "port": 8080,
+            "path": "/marketdata/btcusdt",
+            "subscription": {}
+        },
+        "kraken": {
+            "host": "ws.kraken.com",
+            "port": 443,
+            "path": "/",
+            "subscription": {
+                "event": "subscribe",
+                "subscription": {
+                    "name": "book"
+                },
+                "pair": [
+                    "BTC/USDT"
+                ]
+            }
+        },
+        "okx": {
+            "host": "ws.okx.com",
+            "port": 8443,
+            "path": "/ws/v5/public",
+            "subscription": {
+                "op": "subscribe",
+                "args": [
+                    {
+                        "channel": "books",
+                        "instId": "BTC-USDT"
+                    }
+                ]
+            }
+        }
+    },
+    "verbose": true
+}

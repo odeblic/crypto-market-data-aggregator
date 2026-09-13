@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,19 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configBybit = ExchangeConfiguration
-{
-    .host = "stream.bybit.com",
-    .port = 443,
-    .path = "/v5/public/linear",
-    .subscription = R"({
-    "op": "subscribe",
-    "args": [
-        "orderbook.50.BTCUSDT"
-    ]
-})",
-};
 
 struct ExchangeSessionBybit : ClientSession
 {

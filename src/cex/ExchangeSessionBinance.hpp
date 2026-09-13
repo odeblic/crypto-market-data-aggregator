@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,20 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configBinance = ExchangeConfiguration
-{
-    .host = "stream.binance.com",
-    .port = 9443,
-    .path = "/ws/btcusdt@depth@100ms",
-    .subscription = R"({
-    "method": "SUBSCRIBE",
-    "params": [
-        "btcusdt@depth20@100ms"
-    ],
-    "id": 1
-})",
-};
 
 struct ExchangeSessionBinance : ClientSession
 {

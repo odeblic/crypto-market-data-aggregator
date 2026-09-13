@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,19 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configBitMEX = ExchangeConfiguration
-{
-    .host = "ws.bitmex.com",
-    .port = 443,
-    .path = "/realtime",
-    .subscription = R"({
-    "op": "subscribe",
-    "args": [
-        "orderBookL2_25:XBTUSDT"
-    ]
-})",
-};
 
 struct ExchangeSessionBitMEX : ClientSession
 {

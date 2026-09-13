@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,20 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configHyperliquid = ExchangeConfiguration
-{
-    .host = "api.hyperliquid.xyz",
-    .port = 443,
-    .path = "/ws",
-    .subscription = R"({
-    "method": "subscribe",
-    "subscription": {
-        "type": "l2Book",
-        "coin": "BTC"
-    }
-})",
-};
 
 struct ExchangeSessionHyperliquid : ClientSession
 {

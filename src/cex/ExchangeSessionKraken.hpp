@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cfg/ExchangeConfiguration.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
@@ -9,22 +8,6 @@
 
 #include <string>
 #include <utility>
-
-inline auto const configKraken = ExchangeConfiguration
-{
-    .host = "ws.kraken.com",
-    .port = 443,
-    .path = "/",
-    .subscription = R"({
-    "event": "subscribe",
-    "subscription": {
-        "name": "book"
-    },
-    "pair": [
-        "BTC/USDT"
-    ]
-})",
-};
 
 struct ExchangeSessionKraken : ClientSession
 {

@@ -1,8 +1,21 @@
-.PHONY: build-debug build-release clean-debug clean-release
+.PHONY: help
+.PHONY: build-debug
+.PHONY: build-release
+.PHONY: build-docker-context
+.PHONY: build-docker-images
+.PHONY: run
+.PHONY: run-with-docker
+.PHONY: clean-debug
+.PHONY: clean-release
+.PHONY: clean-docker-context
+.PHONY: clean-docker-images
 
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
 
 XTERM := xterm -fa 'Monospace' -fs 12
+
+help:
+	@printf "\033[35mwelcome to the crypto market data aggregator\033[0m\n"
 
 build-debug:
 	cmake -B build/debug -DCMAKE_BUILD_TYPE=Debug

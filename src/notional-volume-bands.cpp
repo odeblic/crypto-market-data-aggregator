@@ -11,7 +11,7 @@ int main(int argc, char ** argv)
     auto arguments = Arguments{argc, argv};
     auto path = arguments.getConfigFilePath();
     auto config = loadConfigFromFile<NotionalVolumeBandsConfiguration>(path);
-    auto handler = MarketDataHandlerNotionalVolumeBands{};
+    auto handler = MarketDataHandlerNotionalVolumeBands{config.bands};
     auto client = MarketDataClient{config.aggregator.host, config.aggregator.port, handler};
     client.StreamMarketDataSnapshots("BTCUSD");
 }

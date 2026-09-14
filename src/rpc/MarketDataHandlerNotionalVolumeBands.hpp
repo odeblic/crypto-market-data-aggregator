@@ -8,12 +8,19 @@
 #include "marketdata.pb.h"
 #include "marketdata.grpc.pb.h"
 
-#include <optional>
 #include <memory>
+#include <optional>
+#include <span>
+#include <vector>
 
 class MarketDataHandlerNotionalVolumeBands : public MarketDataHandler
 {
 public:
+    MarketDataHandlerNotionalVolumeBands(std::span<double> bandValues)
+    : bandValues(bandValues.begin(), bandValues.end())
+    {
+    }
+
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
         //printSnapshot(snapshot);
@@ -28,7 +35,7 @@ public:
     }
 
 private:
-    static auto compute(Book const& book) -> Book
+    auto compute(Book const& book) const -> Book
     {
         auto notionalVolumeBands = Book{};
 
@@ -43,7 +50,7 @@ private:
             }
         };
 
-        for (auto notional : {25'000, 100'000, 250'000, 1'000'000, 5'000'000, 10'000'000, 25'000'000, 50'000'000})
+        for (auto notional : bandValues)
         {
             calculateAndAdd(Side::ASK, notional);
             calculateAndAdd(Side::BID, notional);
@@ -86,4 +93,6 @@ private:
             return std::nullopt;
         }
     }
+
+    std::vector<double> bandValues;
 };

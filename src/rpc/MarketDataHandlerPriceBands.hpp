@@ -9,10 +9,17 @@
 #include "marketdata.grpc.pb.h"
 
 #include <memory>
+#include <span>
+#include <vector>
 
 class MarketDataHandlerPriceBands : public MarketDataHandler
 {
 public:
+    MarketDataHandlerPriceBands(std::span<int> bandValues)
+    : bandValues(bandValues.begin(), bandValues.end())
+    {
+    }
+
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
         //printSnapshot(snapshot);
@@ -27,7 +34,7 @@ public:
     }
 
 private:
-    static auto compute(Book const& book) -> Book
+    auto compute(Book const& book) const -> Book
     {
         auto priceBands = Book{};
 
@@ -42,7 +49,7 @@ private:
             }
         };
 
-        for (auto bps : {50, 100, 200, 500, 1'000})
+        for (auto bps : bandValues)
         {
             calculateAndAdd(Side::ASK, bps);
             calculateAndAdd(Side::BID, bps);
@@ -77,4 +84,6 @@ private:
 
         return Book::Quote{shiftedPrice, cumulatedQuantity};
     }
+
+    std::vector<int> bandValues;
 };

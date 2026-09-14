@@ -56,13 +56,20 @@ int main(int argc, char ** argv)
 
     std::jthread thread_gRPC([&]()
     {
-        grpc::ServerBuilder builder;
-        std::string const serverAddress{config.service.host + ":" + std::to_string(config.service.port)};
+        auto const serverAddress = std::string{config.service.host + ":" + std::to_string(config.service.port)};
+        auto builder = grpc::ServerBuilder{};
         builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
-        std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-        LOG_DEBUG("gRPC server listening on " + serverAddress);
-        server->Wait();
+
+        if (auto server = builder.BuildAndStart())
+        {
+            LOG_DEBUG("gRPC server listening on " + serverAddress);
+            server->Wait();
+        }
+        else
+        {
+            LOG_ERROR("gRPC server could not start");
+        }
     });
 
     client.connect(Exchange::BINANCE, config.exchanges.at("binance"));

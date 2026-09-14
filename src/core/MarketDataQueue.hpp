@@ -4,4 +4,4 @@
 
 #include <boost/lockfree/queue.hpp>
 
-typedef boost::lockfree::queue<MarketUpdate, boost::lockfree::capacity<1024>> MarketDataQueue;
+using MarketDataQueue = boost::lockfree::queue<MarketUpdate, boost::lockfree::capacity<1024>>;

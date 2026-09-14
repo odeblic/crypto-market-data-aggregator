@@ -2,7 +2,7 @@
 
 #include <array>
 
-typedef std::array<char, 16> Ticker;
+using Ticker = std::array<char, 16>;
 
 enum class Side : bool
 {

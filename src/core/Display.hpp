@@ -39,7 +39,10 @@ public:
 
     void debug(std::string_view const& message)
     {
-        log(LogLevel::DEBUG, message);
+        if (verbose)
+        {
+            log(LogLevel::DEBUG, message);
+        }
     }
 
     void info(std::string_view const& message)

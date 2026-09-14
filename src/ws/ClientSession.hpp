@@ -179,17 +179,12 @@ private:
     {
         auto const msg = nlohmann::json::parse(str);
 
-        displayMessage(msg);
+        LOG_DEBUG("message received: " + msg.dump(2));
 
         if (checkMessage(msg))
         {
             processMessage(msg);
         }
-    }
-
-    void displayMessage(nlohmann::json const& msg) const
-    {
-        LOG_DEBUG("message received: " + msg.dump(2));
     }
 
     virtual auto checkMessage(nlohmann::json const& msg) const -> bool

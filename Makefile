@@ -2,6 +2,8 @@
 
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
 
+XTERM := xterm -fa 'Monospace' -fs 12
+
 build-debug:
 	cmake -B build/debug -DCMAKE_BUILD_TYPE=Debug
 	cmake --build build/debug -- -j$(nproc)
@@ -26,6 +28,18 @@ build-docker-images:
 	@for PROG in $(PROGRAMS); do \
 		docker build -f docker/Dockerfile --build-arg PROGRAM_NAME=$$PROG -t $$PROG docker/build-context ; \
 	done
+
+run:
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            "config/aggregator.json" &
+	sleep 1.0
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/release/src/best-bid-offer"        "config/best-bid-offer.json" &
+	sleep 0.5
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/release/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	sleep 0.5
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/release/src/price-bands"           "config/price-bands.json" &
+
+run-with-docker:
+	docker-compose -f docker/docker-compose.yml up
 
 clean-debug:
 	rm -rf build/debug

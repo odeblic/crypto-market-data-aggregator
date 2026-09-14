@@ -187,14 +187,9 @@ private:
         }
     }
 
-    virtual auto checkMessage(nlohmann::json const& msg) const -> bool
-    {
-        return false;
-    }
+    virtual auto checkMessage(nlohmann::json const& msg) const -> bool = 0;
 
-    virtual void processMessage(nlohmann::json const& msg)
-    {
-    }
+    virtual void processMessage(nlohmann::json const& msg) = 0;
 
     boost::asio::ip::tcp::resolver resolver;
     boost::beast::websocket::stream<boost::asio::ssl::stream<boost::beast::tcp_stream>> ws;

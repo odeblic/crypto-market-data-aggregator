@@ -99,10 +99,9 @@ private:
 
     auto getTimestamp() -> std::string
     {
-        using namespace std::chrono;
-        auto const now = system_clock::now();
-        auto const ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
-        auto const timer = system_clock::to_time_t(now);
+        auto const now = std::chrono::system_clock::now();
+        auto const ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now).time_since_epoch().count() % 1000;
+        auto const timer = std::chrono::system_clock::to_time_t(now);
         auto bt = std::tm{};
         localtime_r(&timer, &bt);
         std::ostringstream buffer;
@@ -110,12 +109,12 @@ private:
         if (color)
         {
             buffer << "\033[30;1m" << std::put_time(&bt, "%Y-%m-%d %H:%M:%S")
-                   << '.' << std::setfill('0') << std::setw(3) << ms.count() << "\033[0m";
+                   << '.' << std::setfill('0') << std::setw(3) << ms << "\033[0m";
         }
         else
         {
             buffer << std::put_time(&bt, "%Y-%m-%d %H:%M:%S")
-                   << '.' << std::setfill('0') << std::setw(3) << ms.count();
+                   << '.' << std::setfill('0') << std::setw(3) << ms;
         }
 
         return buffer.str();

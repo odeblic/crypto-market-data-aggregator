@@ -1,6 +1,7 @@
 #include "cfg/Loader.hpp"
 #include "cfg/ViewerConfiguration.hpp"
 //#include "core/Arguments.hpp"
+#include "core/Display.hpp"
 #include "core/MarketDataLogger.hpp"
 #include "core/Utils.hpp"
 #include "ws/WebsocketClient.hpp"
@@ -34,6 +35,7 @@ int main(int argc, char * argv[])
     auto const exchangeName = argv[2];
     auto const exchange = fromString<Exchange>(exchangeName);
     auto const config = loadConfigFromFile<ViewerConfiguration>(path);
+    Display::instantiate(config.verbose, true);
     MarketDataLogger logger;
     WebsocketClient client{logger};
     client.connect(exchange, config.exchanges.at(exchangeName));

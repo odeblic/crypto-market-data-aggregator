@@ -2,6 +2,7 @@
 #include "cfg/Loader.hpp"
 #include "core/Arguments.hpp"
 #include "core/Aggregator.hpp"
+#include "core/Display.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/MarketDataLogger.hpp"
 #include "core/MarketDataPublisher.hpp"
@@ -21,6 +22,7 @@ int main(int argc, char ** argv)
     auto arguments = Arguments{argc, argv};
     auto path = arguments.getConfigFilePath();
     auto const config = loadConfigFromFile<AggregatorConfiguration>(path);
+    Display::instantiate(config.verbose, true);
     MarketDataQueue queue;
     MarketDataPublisher publisher{queue};
     MarketDataLogger logger;

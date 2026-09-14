@@ -1,6 +1,7 @@
 #include "cfg/Loader.hpp"
 #include "cfg/InternalExchangeConfiguration.hpp"
 #include "core/Arguments.hpp"
+#include "core/Display.hpp"
 #include "ws/WebsocketServer.hpp"
 
 #include <nlohmann/json.hpp>
@@ -12,6 +13,7 @@ int main(int argc, char * argv[])
     auto arguments = Arguments{argc, argv};
     auto path = arguments.getConfigFilePath();
     auto config = loadConfigFromFile<InternalExchangeConfiguration>(path);
+    Display::instantiate(config.verbose, true);
     auto server = WebsocketServer{config.service.host, config.service.port, config.service.cert, config.service.pkey};
     std::cout << "Listening on: " << config.service.host << ":" << config.service.port << "\n";
     server.run();

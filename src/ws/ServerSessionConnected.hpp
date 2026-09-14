@@ -56,11 +56,11 @@ private:
     {
         if (ec)
         {
-            std::cerr << "SSL handshake failed: " << ec.message() << "\n";
+            LOG_ERROR("SSL handshake failed" + ec.message());
             return;
         }
 
-        std::cout << "SSL handshake succeeded\n";
+        LOG_DEBUG("SSL handshake succeeded");
         boost::beast::get_lowest_layer(ws).expires_never();
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::server));
         ws.set_option(boost::beast::websocket::stream_base::decorator(
@@ -76,11 +76,11 @@ private:
     {
         if (ec)
         {
-            std::cerr << "WS Handshake failed: " << ec.message() << "\n";
+            LOG_ERROR("WS Handshake failed: " + ec.message());
             return;
         }
 
-        std::cout << "WS Handshake succeeded\n";
+        LOG_DEBUG("WS Handshake succeeded");
         schedulePublishing();
     }
 
@@ -113,7 +113,7 @@ private:
     {
         if (messages.empty())
         {
-            std::cout << "No more messages in the queue\n";
+            LOG_DEBUG("No more messages in the queue");
             schedulePublishing();
             return;
         }
@@ -131,11 +131,11 @@ private:
     {
         if (ec)
         {
-            std::cerr << "Publish failed: " << ec.message() << "\n";
+            LOG_ERROR("Publish failed: " + ec.message());
             return;
         }
 
-        std::cout << "Publish succeeded (" << byteCount << " bytes transferred)\n";
+        LOG_DEBUG("Publish succeeded (" + std::to_string(byteCount) + " bytes transferred)");
         doPublish();
     }
 
@@ -153,29 +153,29 @@ private:
 
         if (ec)
         {
-            std::cerr << "Stop timer failed: " << ec.message() << "\n";
+            LOG_ERROR("Stop timer failed: " + ec.message());
             return;
         }
 
-        std::cout << "Stop timer succeeded\n";
+        LOG_DEBUG("Stop timer succeeded");
     }
 
     void onScheduleEvent(boost::beast::error_code const ec)
     {
         if (ec)
         {
-            std::cerr << "Schedule event failed: " << ec.message() << "\n";
+            LOG_ERROR("Schedule event failed: " + ec.message());
             return;
         }
 
-        std::cout << "Schedule event succeeded\n";
+        LOG_DEBUG("Schedule event succeeded");
         generateMessages();
         doPublish();
     }
 
     void doClose()
     {
-        std::cout << "Closing...\n";
+        LOG_DEBUG("Closing...");
         ws.async_close(
             boost::beast::websocket::close_code::normal,
             boost::beast::bind_front_handler(&ServerSessionConnected::onClose, shared_from_this())
@@ -188,11 +188,11 @@ private:
 
         if (ec)
         {
-            std::cerr << "Close failed: " << ec.message() << "\n";
+            LOG_ERROR("Close failed: " + ec.message());
             return;
         }
 
-        std::cout << "Close succeeded\n";
+        LOG_DEBUG("Close succeeded");
     }
 
     boost::beast::websocket::stream<boost::asio::ssl::stream<boost::beast::tcp_stream>> ws;

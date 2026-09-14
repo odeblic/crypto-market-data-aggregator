@@ -13,7 +13,6 @@
 #include "marketdata.grpc.pb.h"
 
 #include <chrono>
-#include <iostream>
 #include <thread>
 #include <utility>
 
@@ -23,6 +22,7 @@ int main(int argc, char ** argv)
     auto path = arguments.getConfigFilePath();
     auto const config = loadConfigFromFile<AggregatorConfiguration>(path);
     Display::instantiate(config.verbose, true);
+    LOG_INFO("starting the aggregator to consolidate market data from exchanges into a single book");
     MarketDataQueue queue;
     MarketDataPublisher publisher{queue};
     MarketDataLogger logger;
@@ -61,7 +61,7 @@ int main(int argc, char ** argv)
         builder.AddListeningPort(serverAddress, grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
         std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-        std::cout << "gRPC server listening on " << serverAddress << std::endl;
+        LOG_DEBUG("gRPC server listening on " + serverAddress);
         server->Wait();
     });
 

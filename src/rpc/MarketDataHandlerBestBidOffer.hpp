@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/Book.hpp"
+#include "core/Display.hpp"
+#include "core/Formatter.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "rpc/MarketDataHandler.hpp"
@@ -18,7 +20,7 @@ public:
         //printSnapshot(snapshot);
         auto originalBook = makeBook(snapshot);
         auto syntheticBook = compute(originalBook);
-        printBook(syntheticBook);
+        Display::getInstance().show(toString(syntheticBook));
     }
 
     virtual void onUpdate(marketdata::Update const& update) const override

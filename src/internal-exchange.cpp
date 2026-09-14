@@ -14,7 +14,8 @@ int main(int argc, char * argv[])
     auto path = arguments.getConfigFilePath();
     auto config = loadConfigFromFile<InternalExchangeConfiguration>(path);
     Display::instantiate(config.verbose, true);
+    LOG_INFO("starting the internal exchange");
     auto server = WebsocketServer{config.service.host, config.service.port, config.service.cert, config.service.pkey};
-    std::cout << "Listening on: " << config.service.host << ":" << config.service.port << "\n";
+    LOG_DEBUG("Listening on: " + config.service.host + ":" + std::to_string(config.service.port));
     server.run();
 }

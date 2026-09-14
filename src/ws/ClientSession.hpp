@@ -15,7 +15,6 @@
 #include <boost/beast/websocket.hpp>
 #include <nlohmann/json.hpp>
 
-#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -40,10 +39,15 @@ public:
 
     void run()
     {
+        LOG_DEBUG("Host: " + config.host);
+        LOG_DEBUG("Port: " + std::to_string(config.port));
+        LOG_DEBUG("Path: " + config.path);
+        LOG_DEBUG("Subs: " + config.subscription.dump());
+
         if (!SSL_set_tlsext_host_name(ws.next_layer().native_handle(), config.host.c_str()))
         {
             boost::beast::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
-            std::cerr << "SNI Error: " << ec.message() << "\n";
+            LOG_ERROR("SNI Error: " + ec.message());
             return;
         }
 
@@ -64,7 +68,7 @@ private:
     {
         if (ec)
         {
-            std::cerr << "Resolve failed: " << ec.message() << "\n";
+            LOG_ERROR("Resolve failed: " + ec.message());
             return;
         }
 
@@ -79,7 +83,7 @@ private:
     {
         if (ec)
         {
-            std::cerr << "Connect failed: " << ec.message() << "\n";
+            LOG_ERROR("Connect failed: " + ec.message());
             return;
         }
 
@@ -95,17 +99,12 @@ private:
     {
         if (ec)
         {
-            std::cerr << "SSL Handshake failed: " << ec.message() << "\n";
+            LOG_ERROR("SSL Handshake failed: " + ec.message());
             return;
         }
 
         boost::beast::get_lowest_layer(ws).expires_never();
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
-
-        std::cout << "Host: " << config.host << "\n";
-        std::cout << "Port: " << config.port << "\n";
-        std::cout << "Path: " << config.path << "\n";
-        std::cout << "Subs: " << config.subscription << "\n";
 
         ws.async_handshake(
             config.host, config.path,
@@ -117,15 +116,15 @@ private:
     {
         if (ec)
         {
-            std::cerr << "WS Handshake failed: " << ec.message() << "\n";
+            LOG_ERROR("WS Handshake failed: " + ec.message());
             return;
         }
 
-        std::cout << "Connected to live market data feed!\n";
+        LOG_DEBUG("Connected to live market data feed");
 
         if (!config.subscription.empty())
         {
-            std::cout << "Subscription is required.\n";
+            LOG_DEBUG("Subscription is required");
             doSubscribe();
         }
         else
@@ -146,11 +145,11 @@ private:
     {
         if (ec)
         {
-            std::cerr << "Subscription failed: " << ec.message() << "\n";
+            LOG_ERROR("Subscription failed: " + ec.message());
             return;
         }
 
-        std::cout << "Subscription succeeded (" << byteCount << " bytes transferred)\n";
+        LOG_DEBUG("Subscription succeeded (" + std::to_string(byteCount) + " bytes transferred)");
         doRead();
     }
 
@@ -166,11 +165,11 @@ private:
     {
         if (ec)
         {
-            std::cerr << "Read failed: " << ec.message() << "\n";
+            LOG_ERROR("Read failed: " + ec.message());
             return;
         }
 
-        std::cout << "Read succeeded (" << byteCount << " bytes transferred)\n";
+        LOG_DEBUG("Read succeeded (" + std::to_string(byteCount) + " bytes transferred)");
         onMessage(boost::beast::buffers_to_string(buffer.data()));
         buffer.clear();
         doRead();
@@ -190,7 +189,7 @@ private:
 
     void displayMessage(nlohmann::json const& msg) const
     {
-        std::cout << "\033[30;1m" << msg.dump(2) << "\033[0m\n\n";
+        LOG_DEBUG("message received: " + msg.dump(2));
     }
 
     virtual auto checkMessage(nlohmann::json const& msg) const -> bool

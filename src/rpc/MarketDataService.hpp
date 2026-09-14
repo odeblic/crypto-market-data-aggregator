@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
+#include "core/Display.hpp"
 
 #include "marketdata.pb.h"
 #include "marketdata.grpc.pb.h"
@@ -8,7 +9,6 @@
 #include <grpcpp/grpcpp.h>
 
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -23,7 +23,7 @@ public:
         marketdata::Request const * request,
         grpc::ServerWriter<marketdata::Snapshot> * writer) -> grpc::Status override
     {
-        std::cout << "New subscription for symbol: " << request->symbol() << std::endl;
+        LOG_DEBUG("New subscription for symbol: " + request->symbol());
 
         while (!context->IsCancelled())
         {
@@ -38,7 +38,7 @@ public:
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        std::cout << "End of subscription for symbol: " << request->symbol() << std::endl;
+        LOG_DEBUG("End of subscription for symbol: " + request->symbol());
         return grpc::Status::OK;
     }
 

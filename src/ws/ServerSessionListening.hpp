@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Display.hpp"
 #include "ws/ServerSessionConnected.hpp"
 
 #include <boost/asio/io_context.hpp>
@@ -9,7 +10,6 @@
 #include <boost/beast/ssl.hpp>
 #include <boost/beast/websocket.hpp>
 
-#include <iostream>
 #include <memory>
 #include <utility>
 
@@ -31,7 +31,7 @@ public:
 
         if (ec)
         {
-            std::cerr << "Socket creation failed: " << ec.message() << "\n";
+            LOG_ERROR("Socket creation failed: " + ec.message());
             return;
         }
 
@@ -39,7 +39,7 @@ public:
 
         if (ec)
         {
-            std::cerr << "Set option failed: " << ec.message() << "\n";
+            LOG_ERROR("Set option failed: " + ec.message());
             return;
         }
 
@@ -47,7 +47,7 @@ public:
 
         if (ec)
         {
-            std::cerr << "Bind failed: " << ec.message() << "\n";
+            LOG_ERROR("Bind failed: " + ec.message());
             return;
         }
 
@@ -55,11 +55,11 @@ public:
 
         if (ec)
         {
-            std::cerr << "Listen failed: " << ec.message() << "\n";
+            LOG_ERROR("Listen failed: " + ec.message());
             return;
         }
 
-        std::cout << "Listen OK\n";
+        LOG_DEBUG("Listen OK");
     }
 
     void run()
@@ -83,7 +83,7 @@ private:
             std::make_shared<ServerSessionConnected>(std::move(socket), sslctx)->run();
         }
 
-        std::cout << "Accepting...\n";
+        LOG_DEBUG("Accepting...");
         doAccept();
     }
 

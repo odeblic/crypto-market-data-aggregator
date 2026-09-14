@@ -36,6 +36,7 @@ int main(int argc, char * argv[])
     auto const exchange = fromString<Exchange>(exchangeName);
     auto const config = loadConfigFromFile<ViewerConfiguration>(path);
     Display::instantiate(config.verbose, true);
+    LOG_INFO("starting the viewer to see the market data from a single exchange");
     MarketDataLogger logger;
     WebsocketClient client{logger};
     client.connect(exchange, config.exchanges.at(exchangeName));

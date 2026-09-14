@@ -87,8 +87,8 @@ private:
             return;
         }
 
+        LOG_DEBUG("Connect succeeded (" + ep.address().to_string() + ":" + std::to_string(ep.port()) + ")" + ")");
         boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
-
         ws.next_layer().async_handshake(
             boost::asio::ssl::stream_base::client,
             boost::beast::bind_front_handler(&ClientSession::onHandshakeSSL, shared_from_this())
@@ -103,9 +103,9 @@ private:
             return;
         }
 
+        LOG_DEBUG("SSL Handshake succeeded");
         boost::beast::get_lowest_layer(ws).expires_never();
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::client));
-
         ws.async_handshake(
             config.host, config.path,
             boost::beast::bind_front_handler(&ClientSession::onHandshake, shared_from_this()
@@ -120,7 +120,7 @@ private:
             return;
         }
 
-        LOG_DEBUG("Connected to live market data feed");
+        LOG_DEBUG("WS Handshake succeeded");
 
         if (!config.subscription.empty())
         {
@@ -178,7 +178,6 @@ private:
     void onMessage(std::string const& str)
     {
         auto const msg = nlohmann::json::parse(str);
-
         LOG_DEBUG("message received: " + msg.dump(2));
 
         if (checkMessage(msg))

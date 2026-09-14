@@ -77,19 +77,19 @@ public:
         }
     }
 
-    auto generateBook() const -> std::unique_ptr<Book>
+    auto generateBook() const -> Book
     {
-        auto book = std::make_unique<Book>();
+        auto book = Book{};
         std::scoped_lock<std::mutex> lock(mutex);
 
         for (auto const& [price, quantities] : priceLevels.ask)
         {
-            book->ask.push_back(Book::Quote{price, quantities.total()});
+            book.ask.push_back(Book::Quote{price, quantities.total()});
         }
 
         for (auto const& [price, quantities] : priceLevels.bid)
         {
-            book->bid.push_back(Book::Quote{price, quantities.total()});
+            book.bid.push_back(Book::Quote{price, quantities.total()});
         }
 
         return book;

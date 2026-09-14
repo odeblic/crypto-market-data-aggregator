@@ -42,7 +42,7 @@ public:
         return grpc::Status::OK;
     }
 
-    void updateBook(std::unique_ptr<Book> book, std::string symbol = "BTC/USDT")
+    void updateBook(Book book, std::string symbol = "BTC/USDT")
     {
         std::scoped_lock<std::mutex> lock(mutex);
         this->symbol = symbol;
@@ -62,12 +62,12 @@ private:
             level->set_quantity(quantity);
         };
 
-        for (auto const& quote : book->ask)
+        for (auto const& quote : book.ask)
         {
             addPriceLevel(snapshot.add_asks(), quote.price, quote.quantity);
         }
 
-        for (auto const& quote : book->bid)
+        for (auto const& quote : book.bid)
         {
             addPriceLevel(snapshot.add_bids(), quote.price, quote.quantity);
         }
@@ -76,6 +76,6 @@ private:
     }
 
     std::string symbol;
-    std::unique_ptr<Book> book;
+    Book book;
     std::mutex mutable mutex;
 };

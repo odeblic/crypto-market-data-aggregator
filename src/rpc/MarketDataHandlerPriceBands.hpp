@@ -81,8 +81,8 @@ private:
 
         for (auto const& quote : quotes)
         {
-            if (side == Side::ASK && quote.price < shiftedPrice ||
-                side == Side::BID && quote.price > shiftedPrice)
+            if ((side == Side::ASK && quote.price < shiftedPrice) ||
+                (side == Side::BID && quote.price > shiftedPrice))
             {
                 cumulatedQuantity += quote.quantity;
             }

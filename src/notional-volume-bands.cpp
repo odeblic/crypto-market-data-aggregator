@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
     auto config = loadConfigFromFile<NotionalVolumeBandsConfiguration>(path);
     Display::instantiate(config.verbose, true);
     LOG_INFO("starting the client to show the notional volume bands");
-    auto handler = MarketDataHandlerNotionalVolumeBands{config.bands};
+    auto handler = MarketDataHandlerNotionalVolumeBands{config.bands, config.verbose};
     auto client = MarketDataClient{config.aggregator.host, config.aggregator.port, handler};
     client.StreamMarketDataSnapshots("BTCUSD");
 }

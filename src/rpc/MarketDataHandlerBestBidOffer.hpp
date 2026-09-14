@@ -5,6 +5,7 @@
 #include "core/Formatter.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
+#include "rpc/MarketDataFormatter.hpp"
 #include "rpc/MarketDataHandler.hpp"
 
 #include "marketdata.pb.h"
@@ -15,9 +16,18 @@
 class MarketDataHandlerBestBidOffer : public MarketDataHandler
 {
 public:
+    MarketDataHandlerBestBidOffer(bool verbose)
+    : verbose(verbose)
+    {
+    }
+
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
-        //printSnapshot(snapshot);
+        if (verbose)
+        {
+            Display::getInstance().show(toString(snapshot));
+        }
+
         auto originalBook = makeBook(snapshot);
         auto syntheticBook = compute(originalBook);
         Display::getInstance().show(toString(syntheticBook));
@@ -25,7 +35,10 @@ public:
 
     virtual void onUpdate(marketdata::Update const& update) const override
     {
-        //printUpdate(update);
+        if (verbose)
+        {
+            Display::getInstance().show(toString(update));
+        }
     }
 
 private:
@@ -36,4 +49,6 @@ private:
         bestBidOffer.bid.resize(1);
         return bestBidOffer;
     }
+
+    bool verbose{false};
 };

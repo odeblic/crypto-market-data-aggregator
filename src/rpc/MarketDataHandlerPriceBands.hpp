@@ -5,6 +5,7 @@
 #include "core/Formatter.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
+#include "rpc/MarketDataFormatter.hpp"
 #include "rpc/MarketDataHandler.hpp"
 
 #include "marketdata.pb.h"
@@ -17,14 +18,18 @@
 class MarketDataHandlerPriceBands : public MarketDataHandler
 {
 public:
-    MarketDataHandlerPriceBands(std::span<int> bandValues)
-    : bandValues(bandValues.begin(), bandValues.end())
+    MarketDataHandlerPriceBands(std::span<int> bandValues, bool verbose)
+    : bandValues(bandValues.begin(), bandValues.end()), verbose(verbose)
     {
     }
 
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
     {
-        //printSnapshot(snapshot);
+        if (verbose)
+        {
+            Display::getInstance().show(toString(snapshot));
+        }
+
         auto originalBook = makeBook(snapshot);
         auto syntheticBook = compute(originalBook);
         Display::getInstance().show(toString(syntheticBook));
@@ -32,7 +37,10 @@ public:
 
     virtual void onUpdate(marketdata::Update const& update) const override
     {
-        //printUpdate(update);
+        if (verbose)
+        {
+            Display::getInstance().show(toString(update));
+        }
     }
 
 private:
@@ -88,4 +96,5 @@ private:
     }
 
     std::vector<int> bandValues;
+    bool verbose{false};
 };

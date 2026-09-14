@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
     auto config = loadConfigFromFile<BestBidOfferConfiguration>(path);
     Display::instantiate(config.verbose, true);
     LOG_INFO("starting the client to show the best bid offer");
-    auto handler = MarketDataHandlerBestBidOffer{};
+    auto handler = MarketDataHandlerBestBidOffer{config.verbose};
     auto client = MarketDataClient{config.aggregator.host, config.aggregator.port, handler};
     client.StreamMarketDataSnapshots("BTCUSD");
 }

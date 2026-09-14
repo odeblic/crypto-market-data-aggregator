@@ -31,9 +31,7 @@ public:
 
         auto empty() const -> bool
         {
-            return std::all_of(quantities.begin(), quantities.end(), [](double x) {
-                return x == 0.0;
-            });
+            return std::count(quantities.begin(), quantities.end(), 0.0) == quantities.size();
         }
 
         auto total() const -> double

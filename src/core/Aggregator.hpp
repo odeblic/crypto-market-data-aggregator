@@ -31,7 +31,7 @@ public:
 
         auto empty() const -> bool
         {
-            return std::count(quantities.begin(), quantities.end(), 0.0) == quantities.size();
+            return static_cast<size_t>(std::count(quantities.begin(), quantities.end(), 0.0)) == quantities.size();
         }
 
         auto total() const -> double

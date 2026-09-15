@@ -78,58 +78,58 @@ issue-ssl-certificate:
 	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"
 
 run-debug:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-asan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-asan/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-asan/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-asan/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-asan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-asan/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-asan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-asan/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-asan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-ubsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-ubsan/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-ubsan/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-ubsan/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-ubsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-ubsan/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-ubsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-ubsan/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-ubsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-tsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-tsan/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-tsan/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-tsan/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-tsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-tsan/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-tsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-tsan/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-tsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-lsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-lsan/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-lsan/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-lsan/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-lsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-lsan/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-lsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-lsan/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-lsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-release:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            --config "config/aggregator.json" &
 	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/release/src/best-bid-offer"        "config/best-bid-offer.json" &
+	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/release/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/release/src/notional-volume-bands" "config/notional-volume-bands.json" &
+	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/release/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
 	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/release/src/price-bands"           "config/price-bands.json" &
+	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/release/src/price-bands"           --config "config/price-bands.json" &
 
 run-with-docker:
 	docker-compose -f docker/docker-compose.yml up

@@ -8,6 +8,6 @@ ENV PROGRAM_NAME=${PROGRAM_NAME}
 COPY "${PROGRAM_NAME}" "bin/${PROGRAM_NAME}"
 COPY "${PROGRAM_NAME}.json" "share/${PROGRAM_NAME}.json"
 RUN chmod +x "bin/${PROGRAM_NAME}"
-RUN echo "#!/bin/sh\ncd /usr/local\nexec bin/${PROGRAM_NAME} share/${PROGRAM_NAME}.json" > bin/entrypoint.sh
+RUN echo "#!/bin/sh\ncd /usr/local\nexec bin/${PROGRAM_NAME} --config share/${PROGRAM_NAME}.json" > bin/entrypoint.sh
 RUN chmod +x bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

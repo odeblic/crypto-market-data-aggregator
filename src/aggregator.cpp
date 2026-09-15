@@ -1,7 +1,7 @@
+#include "biz/Aggregator.hpp"
 #include "cfg/AggregatorConfiguration.hpp"
 #include "cfg/Loader.hpp"
 #include "core/Arguments.hpp"
-#include "core/Aggregator.hpp"
 #include "core/Display.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/MarketDataLogger.hpp"

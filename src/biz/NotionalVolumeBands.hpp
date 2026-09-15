@@ -11,7 +11,7 @@
 class NotionalVolumeBands
 {
 public:
-    NotionalVolumeBands(std::span<double> bandValues)
+    NotionalVolumeBands(std::span<double const> bandValues)
     : bandValues(bandValues.begin(), bandValues.end())
     {
     }

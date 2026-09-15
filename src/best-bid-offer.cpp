@@ -1,6 +1,6 @@
 #include "cfg/BestBidOfferConfiguration.hpp"
 #include "cfg/Loader.hpp"
-#include "core/Arguments.hpp"
+#include "core/ArgumentParser.hpp"
 #include "core/Display.hpp"
 #include "rpc/MarketDataClient.hpp"
 #include "rpc/MarketDataHandlerBestBidOffer.hpp"
@@ -9,12 +9,14 @@
 
 int main(int argc, char ** argv)
 {
-    auto arguments = Arguments{argc, argv};
-    auto path = arguments.getConfigFilePath();
-    auto config = loadConfigFromFile<BestBidOfferConfiguration>(path);
-    Display::instantiate(config.verbose, true);
+    auto parser = ArgumentParser{argc, argv};
+    parser.assertExchangeCount(0);
+    auto const arguments = parser.getArguments();
+    auto const config = loadConfigFromFile<BestBidOfferConfiguration>(arguments.configPath);
+    auto const verbose = config.verbose || arguments.verbose;
+    Display::instantiate(verbose, true);
     LOG_INFO("starting the client to show the best bid offer");
-    auto handler = MarketDataHandlerBestBidOffer{config.verbose};
+    auto handler = MarketDataHandlerBestBidOffer{verbose};
     auto client = MarketDataClient{config.aggregator.host, config.aggregator.port, handler};
     client.StreamMarketDataSnapshots("BTCUSD");
 }

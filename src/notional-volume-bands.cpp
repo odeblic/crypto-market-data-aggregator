@@ -1,6 +1,6 @@
 #include "cfg/Loader.hpp"
 #include "cfg/NotionalVolumeBandsConfiguration.hpp"
-#include "core/Arguments.hpp"
+#include "core/ArgumentParser.hpp"
 #include "core/Display.hpp"
 #include "rpc/MarketDataClient.hpp"
 #include "rpc/MarketDataHandlerNotionalVolumeBands.hpp"
@@ -9,12 +9,14 @@
 
 int main(int argc, char ** argv)
 {
-    auto arguments = Arguments{argc, argv};
-    auto path = arguments.getConfigFilePath();
-    auto config = loadConfigFromFile<NotionalVolumeBandsConfiguration>(path);
-    Display::instantiate(config.verbose, true);
+    auto parser = ArgumentParser{argc, argv};
+    parser.assertExchangeCount(0);
+    auto const arguments = parser.getArguments();
+    auto const config = loadConfigFromFile<NotionalVolumeBandsConfiguration>(arguments.configPath);
+    auto const verbose = config.verbose || arguments.verbose;
+    Display::instantiate(verbose, true);
     LOG_INFO("starting the client to show the notional volume bands");
-    auto handler = MarketDataHandlerNotionalVolumeBands{config.bands, config.verbose};
+    auto handler = MarketDataHandlerNotionalVolumeBands{config.bands, verbose};
     auto client = MarketDataClient{config.aggregator.host, config.aggregator.port, handler};
     client.StreamMarketDataSnapshots("BTCUSD");
 }

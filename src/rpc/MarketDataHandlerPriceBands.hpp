@@ -16,7 +16,7 @@
 class MarketDataHandlerPriceBands : public MarketDataHandler
 {
 public:
-    MarketDataHandlerPriceBands(std::span<int> bandValues, bool verbose)
+    MarketDataHandlerPriceBands(std::span<int const> bandValues, bool verbose)
     : bands(bandValues), verbose(verbose)
     {
     }

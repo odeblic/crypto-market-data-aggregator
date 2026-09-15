@@ -1,7 +1,7 @@
 #include "biz/Aggregator.hpp"
 #include "cfg/AggregatorConfiguration.hpp"
 #include "cfg/Loader.hpp"
-#include "core/Arguments.hpp"
+#include "core/ArgumentParser.hpp"
 #include "core/Display.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/MarketDataLogger.hpp"
@@ -18,10 +18,12 @@
 
 int main(int argc, char ** argv)
 {
-    auto arguments = Arguments{argc, argv};
-    auto path = arguments.getConfigFilePath();
-    auto const config = loadConfigFromFile<AggregatorConfiguration>(path);
-    Display::instantiate(config.verbose, true);
+    auto parser = ArgumentParser{argc, argv};
+    parser.assertExchangeCount(0, 7);
+    auto arguments = parser.getArguments();
+    auto const config = loadConfigFromFile<AggregatorConfiguration>(arguments.configPath);
+    auto const verbose = config.verbose || arguments.verbose;
+    Display::instantiate(verbose, true);
     LOG_INFO("starting the aggregator to consolidate market data from exchanges into a single book");
     MarketDataQueue queue;
     MarketDataPublisher publisher{queue};
@@ -72,13 +74,10 @@ int main(int argc, char ** argv)
         }
     });
 
-    client.connect(Exchange::BINANCE, config.exchanges.at("binance"));
-    client.connect(Exchange::BITMEX, config.exchanges.at("bitmex"));
-    client.connect(Exchange::BYBIT, config.exchanges.at("bybit"));
-    client.connect(Exchange::COINBASE, config.exchanges.at("coinbase"));
-    client.connect(Exchange::HYPERLIQUID, config.exchanges.at("hyperliquid"));
-    //client.connect(Exchange::INTERNAL, config.exchanges.at("internal"));
-    client.connect(Exchange::KRAKEN, config.exchanges.at("kraken"));
-    client.connect(Exchange::OKX, config.exchanges.at("okx"));
+    for (auto const& [exchangeId, exchangeName] : arguments.exchanges)
+    {
+        client.connect(exchangeId, config.exchanges.at(exchangeName));
+    }
+
     client.run();
 }

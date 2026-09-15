@@ -16,7 +16,7 @@
 class MarketDataHandlerNotionalVolumeBands : public MarketDataHandler
 {
 public:
-    MarketDataHandlerNotionalVolumeBands(std::span<double> bandValues, bool verbose)
+    MarketDataHandlerNotionalVolumeBands(std::span<double const> bandValues, bool verbose)
     : bands(bandValues), verbose(verbose)
     {
     }

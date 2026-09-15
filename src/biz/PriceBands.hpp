@@ -11,7 +11,7 @@
 class PriceBands
 {
 public:
-    PriceBands(std::span<int> bandValues)
+    PriceBands(std::span<int const> bandValues)
     : bandValues(bandValues.begin(), bandValues.end())
     {
     }

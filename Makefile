@@ -7,6 +7,7 @@
 .PHONY: build-release
 .PHONY: build-docker-context
 .PHONY: build-docker-images
+.PHONY: issue-ssl-certificate
 .PHONY: run-debug
 .PHONY: run-debug-asan
 .PHONY: run-debug-ubsan
@@ -22,6 +23,7 @@
 .PHONY: clean-release
 .PHONY: clean-docker-context
 .PHONY: clean-docker-images
+.PHONY: clean-ssl-certificate
 
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
 
@@ -70,6 +72,10 @@ build-docker-images:
 	@for PROG in $(PROGRAMS); do \
 		docker build -f docker/Dockerfile --build-arg PROGRAM_NAME=$$PROG -t $$PROG docker/build-context ; \
 	done
+
+issue-ssl-certificate:
+	mkdir -p ssl
+	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"
 
 run-debug:
 	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            "config/aggregator.json" &
@@ -153,3 +159,6 @@ clean-docker-images:
 	@for PROG in $(PROGRAMS); do \
 		docker image rm $$PROG ; \
 	done
+
+clean-ssl-certificate:
+	rm -rf ssl

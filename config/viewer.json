@@ -93,5 +93,5 @@
             }
         }
     },
-    "verbose": true
+    "verbose": false
 }

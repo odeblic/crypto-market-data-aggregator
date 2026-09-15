@@ -13,5 +13,5 @@
         "cert": "../../ssl/certificate.pem",
         "pkey": "../../ssl/private-key.pem"
     },
-    "verbose": true
+    "verbose": false
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
+#include "core/Display.hpp"
 #include "core/MarketUpdate.hpp"
 #include "rpc/MarketDataHandler.hpp"
 
@@ -49,10 +50,7 @@ public:
 
         if (!status.ok())
         {
-            std::cerr << "StreamMarketDataSnapshots RPC failed: " 
-                      << status.error_message() 
-                      << " (code " << status.error_code() << ")" 
-                      << std::endl;
+            LOG_ERROR("StreamMarketDataSnapshots RPC failed: " + status.error_message());
         }
     }
 
@@ -78,10 +76,7 @@ public:
 
         if (!status.ok())
         {
-            std::cerr << "StreamMarketDataUpdates RPC failed: " 
-                      << status.error_message() 
-                      << " (code " << status.error_code() << ")" 
-                      << std::endl;
+            LOG_ERROR("StreamMarketDataUpdates RPC failed: " + status.error_message());
         }
     }
 

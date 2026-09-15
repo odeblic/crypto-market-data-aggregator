@@ -54,12 +54,17 @@ struct ExchangeSessionBitMEX : ClientSession
             return marketUpdate;
         };
 
+        auto convertQuantityFromSatoshiToBitcoin = [](long quantity) -> double
+        {
+            return static_cast<double>(quantity) / 100'000'000;
+        };
+
         for (auto const& item : msg["data"])
         {
             auto const ticker = fromString<Ticker>(item["symbol"].get<std::string>());
             auto const side = fromString<Side>(item["side"].get<std::string>());
             auto const price = item["price"].get<double>();
-            auto const quantity = item.value<long>("size", 0);
+            auto const quantity = convertQuantityFromSatoshiToBitcoin(item.value<long>("size", 0));
             auto const marketUpdate = makeMarketUpdate(ticker, side, price, quantity);
             publish(marketUpdate);
         }

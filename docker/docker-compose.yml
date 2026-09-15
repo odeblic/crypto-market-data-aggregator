@@ -4,6 +4,7 @@ services:
   aggregator:
     image: aggregator
     container_name: aggregator
+    command: binance coinbase okx
     ports:
       - "50051:50051"
     networks:

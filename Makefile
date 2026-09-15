@@ -27,6 +27,8 @@
 
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
 
+EXCHANGES := binance coinbase okx
+
 XTERM := xterm -fa 'Monospace' -fs 12
 
 help:
@@ -78,7 +80,7 @@ issue-ssl-certificate:
 	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"
 
 run-debug:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
@@ -87,7 +89,7 @@ run-debug:
 	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-asan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-asan/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-asan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-asan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
@@ -96,7 +98,7 @@ run-debug-asan:
 	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-asan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-ubsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-ubsan/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-ubsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-ubsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
@@ -105,7 +107,7 @@ run-debug-ubsan:
 	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-ubsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-tsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-tsan/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-tsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-tsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
@@ -114,7 +116,7 @@ run-debug-tsan:
 	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-tsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-debug-lsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-lsan/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-lsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-lsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5
@@ -123,7 +125,7 @@ run-debug-lsan:
 	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-lsan/src/price-bands"           --config "config/price-bands.json" &
 
 run-release:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            --config "config/aggregator.json" &
+	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
 	sleep 1.0
 	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/release/src/best-bid-offer"        --config "config/best-bid-offer.json" &
 	sleep 0.5

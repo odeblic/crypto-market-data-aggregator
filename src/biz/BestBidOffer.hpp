@@ -6,7 +6,16 @@
 static inline auto computeBestBidOffer(Book const& book) -> Book
 {
     auto bestBidOffer = book;
-    bestBidOffer.ask.resize(1);
-    bestBidOffer.bid.resize(1);
+
+    if (book.ask.size() > 0)
+    {
+        bestBidOffer.ask.resize(1);
+    }
+
+    if (book.bid.size() > 0)
+    {
+        bestBidOffer.bid.resize(1);
+    }
+
     return bestBidOffer;
 }

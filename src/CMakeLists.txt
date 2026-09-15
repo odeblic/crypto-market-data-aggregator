@@ -1,7 +1,5 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_compile_options(-Wall -Wextra -Wfatal-errors -fmax-errors=1)
-
 add_executable(internal-exchange internal-exchange.cpp)
 target_link_libraries(internal-exchange PRIVATE
     nlohmann_json::nlohmann_json

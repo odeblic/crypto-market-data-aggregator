@@ -10,6 +10,7 @@ help:
 	@printf "\033[32m  all\033[0m         invoke \033[32mconfigure\033[0m, \033[32mbuild\033[0m, \033[32mtest\033[0m\n"
 	@printf "\033[32m  configure\033[0m   configure cmake builds\n"
 	@printf "\033[32m  build\033[0m       build all artifacts for all builds\n"
+	@printf "\033[32m  ssl\033[0m         generate SSL private key and certificate\n"
 	@printf "\033[32m  test\033[0m        run all unit tests\n"
 	@printf "\033[32m  docker\033[0m      build the docker stack and run it\n"
 	@printf "\033[32m  clean\033[0m       cleanup all build artifacts\n"
@@ -65,8 +66,8 @@ docker:
 	done
 	docker-compose -f docker/docker-compose.yml up
 
-.PHONY: ssl-certificate
-ssl-certificate:
+.PHONY: ssl
+ssl:
 	@printf "\033[34mgenerate SSL private key and certificate\033[0m\n"
 	cmake -E make_directory ssl
 	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"

@@ -2,11 +2,10 @@
 
 ## Objective
 
-This is a prototype to discover several crypto exchanges
-and get familiar with their connectivity.
+This prototype is used to discover several crypto exchanges and become
+familiar with their connectivity.
 
-It also allows to assess the data quality before
-performing the aggregation.
+It also allows us to assess data quality before performing aggregation.
 
 ## Description
 
@@ -21,8 +20,8 @@ The program connects to the following exchanges:
 + kraken
 + okx
 
-Once the connection established, it will simply log market updates
-for the **BTC/USDT** pair on the console and in a file.
+Once the connection is established, it simply logs market updates
+for the **BTC/USDT** pair to the console and to a file.
 
 ## Usage
 
@@ -39,7 +38,7 @@ uv run src/main.py --exchange EXCHANGE_NAME --debug
 ```
 
 Collect 10 seconds of market data for each exchange
-and concatenete all results in a single CSV file:
+and concatenate all results into a single CSV file:
 
 ```sh
 make all.csv

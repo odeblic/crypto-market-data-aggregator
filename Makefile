@@ -1,166 +1,111 @@
-.PHONY: help
-.PHONY: build-debug
-.PHONY: build-debug-asan
-.PHONY: build-debug-ubsan
-.PHONY: build-debug-tsan
-.PHONY: build-debug-lsan
-.PHONY: build-release
-.PHONY: build-docker-context
-.PHONY: build-docker-images
-.PHONY: issue-ssl-certificate
-.PHONY: run-debug
-.PHONY: run-debug-asan
-.PHONY: run-debug-ubsan
-.PHONY: run-debug-tsan
-.PHONY: run-debug-lsan
-.PHONY: run-release
-.PHONY: run-with-docker
-.PHONY: clean-debug
-.PHONY: clean-debug-asan
-.PHONY: clean-debug-ubsan
-.PHONY: clean-debug-tsan
-.PHONY: clean-debug-lsan
-.PHONY: clean-release
-.PHONY: clean-docker-context
-.PHONY: clean-docker-images
-.PHONY: clean-ssl-certificate
-
+EXCHANGES := binance coinbase okx # bitmex kraken hyperliquid bybit internal
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
-
-EXCHANGES := binance coinbase okx
-
+BUILDS := release debug debug-asan debug-ubsan debug-tsan debug-lsan
 XTERM := xterm -fa 'Monospace' -fs 12
 
+.PHONY: help
 help:
-	@printf "\033[35mwelcome to the crypto market data aggregator\033[0m\n"
-
-build-debug:
-	cmake -B build/debug -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build/debug -- -j$(nproc)
-
-build-debug-asan:
-	cmake -B build/debug-asan -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=ASAN
-	cmake --build build/debug-asan -- -j$(nproc)
-
-build-debug-ubsan:
-	cmake -B build/debug-ubsan -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=UBSAN
-	cmake --build build/debug-ubsan -- -j$(nproc)
-
-build-debug-tsan:
-	cmake -B build/debug-tsan -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=TSAN
-	cmake --build build/debug-tsan -- -j$(nproc)
-
-build-debug-lsan:
-	cmake -B build/debug-lsan -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=LSAN
-	cmake --build build/debug-lsan -- -j$(nproc)
-
-build-release:
-	cmake -B build/release -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release -- -j$(nproc)
-
-build-docker-context:
-	mkdir -p docker/build-context
-	@for PROG in $(PROGRAMS); do \
-		cp build/release/src/$$PROG docker/build-context/ ; \
-		cp config/$$PROG.json docker/build-context/ ; \
+	@printf "Helper Makefile for \033[35mCrypto Market Data Aggregator\033[0m project.\n\n"
+	@printf "These are targets for common tasks:\n\n"
+	@printf "\033[32m  all\033[0m         invoke \033[32mconfigure\033[0m, \033[32mbuild\033[0m, \033[32mtest\033[0m\n"
+	@printf "\033[32m  configure\033[0m   configure cmake builds\n"
+	@printf "\033[32m  build\033[0m       build all artifacts for all builds\n"
+	@printf "\033[32m  test\033[0m        run all unit tests\n"
+	@printf "\033[32m  docker\033[0m      build the docker stack and run it\n"
+	@printf "\033[32m  clean\033[0m       cleanup all build artifacts\n"
+	@printf "\033[32m  help\033[0m        display this message\n"
+	@printf "\n"
+	@printf "These are targets for build-specific tasks:\n\n"
+	@printf "\033[32m  build-\033[33mx\033[0m     build all artifacts for build \033[33mx\033[0m\n"
+	@printf "\033[32m  test-\033[33mx\033[0m      run all unit tests for build \033[33mx\033[0m\n"
+	@printf "\033[32m  run-\033[33mx\033[0m       run the whole stack for build \033[33mx\033[0m\n"
+	@printf "\033[32m  clean-\033[33mx\033[0m     cleanup all artifacts for build \033[33mx\033[0m\n"
+	@printf "\n"
+	@printf "Available builds:\n"
+	@for BUILD in $(BUILDS); do \
+		printf "\033[33m  $$BUILD\033[0m\n" ; \
 	done
-	@for PROG in $(PROGRAMS); do \
-		if [ $$PROG != aggregator ]; then \
-			sed -i 's/127.0.0.1/aggregator/' docker/build-context/$$PROG.json ; \
+
+.PHONY: all
+all: configure build test
+
+.PHONY: configure
+configure:
+	@printf "\033[34mconfigure all builds\033[0m\n"
+	cmake -B build/debug       -DCMAKE_BUILD_TYPE=Debug
+	cmake -B build/debug-asan  -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=ASAN
+	cmake -B build/debug-ubsan -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=UBSAN
+	cmake -B build/debug-tsan  -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=TSAN
+	cmake -B build/debug-lsan  -DCMAKE_BUILD_TYPE=Debug -DSAN_MODE=LSAN
+	cmake -B build/release     -DCMAKE_BUILD_TYPE=Release
+
+.PHONY: build
+build: $(addprefix build-,$(BUILDS))
+
+.PHONY: $(addprefix build-,$(BUILDS))
+$(addprefix build-,$(BUILDS)): build-%:
+	@printf "\033[34mbuild all artifacts for build $*\033[0m\n"
+	cmake --build "build/$*" -- -j$(nproc)
+
+.PHONY: docker
+docker:
+	@printf "\033[34msetup the entire docker stack and run it\033[0m\n"
+	mkdir -p docker/build-context
+	@for PROGRAM in $(PROGRAMS); do \
+		cp build/release/src/$$PROGRAM docker/build-context/ ; \
+		cp config/$$PROGRAM.json docker/build-context/ ; \
+	done
+	@for PROGRAM in $(PROGRAMS); do \
+		if [ $$PROGRAM != aggregator ]; then \
+			sed -i 's/127.0.0.1/aggregator/' docker/build-context/$$PROGRAM.json ; \
 		fi \
 	done
-
-build-docker-images:
-	@for PROG in $(PROGRAMS); do \
-		docker build -f docker/Dockerfile --build-arg PROGRAM_NAME=$$PROG -t $$PROG docker/build-context ; \
+	@for PROGRAM in $(PROGRAMS); do \
+		docker build -f docker/Dockerfile --build-arg PROGRAM_NAME=$$PROGRAM -t $$PROGRAM docker/build-context ; \
 	done
-
-issue-ssl-certificate:
-	mkdir -p ssl
-	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"
-
-run-debug:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug/src/price-bands"           --config "config/price-bands.json" &
-
-run-debug-asan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-asan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-asan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-asan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-asan/src/price-bands"           --config "config/price-bands.json" &
-
-run-debug-ubsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-ubsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-ubsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-ubsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-ubsan/src/price-bands"           --config "config/price-bands.json" &
-
-run-debug-tsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-tsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-tsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-tsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-tsan/src/price-bands"           --config "config/price-bands.json" &
-
-run-debug-lsan:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/debug-lsan/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/debug-lsan/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/debug-lsan/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/debug-lsan/src/price-bands"           --config "config/price-bands.json" &
-
-run-release:
-	$(XTERM) -geometry 80x24+050+050 -title "aggregator"            -e "build/release/src/aggregator"            --config "config/aggregator.json" $(EXCHANGES) &
-	sleep 1.0
-	$(XTERM) -geometry 60x16+100+100 -title "best-bid-offer"        -e "build/release/src/best-bid-offer"        --config "config/best-bid-offer.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+150+150 -title "notional-volume-bands" -e "build/release/src/notional-volume-bands" --config "config/notional-volume-bands.json" &
-	sleep 0.5
-	$(XTERM) -geometry 60x16+200+200 -title "price-bands"           -e "build/release/src/price-bands"           --config "config/price-bands.json" &
-
-run-with-docker:
 	docker-compose -f docker/docker-compose.yml up
 
-clean-debug:
-	rm -rf build/debug
-
-clean-debug-asan:
-	rm -rf build/debug-asan
-
-clean-debug-ubsan:
-	rm -rf build/debug-ubsan
-
-clean-debug-tsan:
-	rm -rf build/debug-tsan
-
-clean-debug-lsan:
-	rm -rf build/debug-lsan
-
-clean-release:
-	rm -rf build/release
-
-clean-docker-context:
-	rm -rf docker/build-context
-
-clean-docker-images:
-	@for PROG in $(PROGRAMS); do \
-		docker image rm $$PROG ; \
+.PHONY: ssl-certificate
+ssl-certificate:
+	@printf "\033[34mgenerate SSL private key and certificate\033[0m\n"
+	cmake -E make_directory ssl
+	openssl req -x509 -newkey rsa:2048 -keyout ssl/private-key.pem -out ssl/certificate.pem -days 365 -nodes -subj "/CN=localhost"
+	@for BUILD in $(BUILDS); do \
+		cmake -E make_directory build/$$BUILD ; \
+		cp ssl/private-key.pem build/$$BUILD ; \
+		cp ssl/certificate.pem build/$$BUILD ; \
 	done
 
-clean-ssl-certificate:
-	rm -rf ssl
+.PHONY: test
+test: $(addprefix test-,$(BUILDS))
+
+.PHONY: $(addprefix test-,$(BUILDS))
+$(addprefix test-,$(BUILDS)): test-%:
+	@printf "\033[34mrun all unit tests for build $*\033[0m\n"
+	build/$*/test/aggregator-tests
+	build/$*/test/best-bid-offer-tests
+	build/$*/test/notional-volume-bands-tests
+	build/$*/test/price-bands-tests
+
+.PHONY: $(addprefix run-,$(BUILDS))
+$(addprefix run-,$(BUILDS)): run-%:
+	@printf "\033[34mrun the whole stack for build $*\033[0m\n"
+	PROGRAM="aggregator";            $(XTERM) -geometry 80x24+050+050 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" $(EXCHANGES) &
+	sleep 1.0
+	PROGRAM="best-bid-offer";        $(XTERM) -geometry 60x16+100+100 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
+	sleep 0.5
+	PROGRAM="notional-volume-bands"; $(XTERM) -geometry 60x16+150+150 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
+	sleep 0.5
+	PROGRAM="price-bands";           $(XTERM) -geometry 60x16+200+200 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
+
+.PHONY: clean
+clean: $(addprefix clean-,$(BUILDS))
+	@printf "\033[34mcleanup all generated files\033[0m\n"
+	cmake -E rm -rf build
+	cmake -E rm -rf docker/build-context
+	cmake -E rm -rf ssl
+
+.PHONY: $(addprefix clean-,$(BUILDS))
+$(addprefix clean-,$(BUILDS)): clean-%:
+	@printf "\033[34mcleanup all build artifacts for build $*\033[0m\n"
+	cmake -E rm -rf build/$*

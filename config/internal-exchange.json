@@ -10,8 +10,8 @@
         "host": "0.0.0.0",
         "port": 8080,
         "path": "marketdata",
-        "cert": "../../ssl/certificate.pem",
-        "pkey": "../../ssl/private-key.pem"
+        "cert": "ssl/certificate.pem",
+        "pkey": "ssl/private-key.pem"
     },
     "verbose": false
 }

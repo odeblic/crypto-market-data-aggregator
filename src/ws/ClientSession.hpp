@@ -87,7 +87,7 @@ private:
             return;
         }
 
-        LOG_DEBUG("Connect succeeded (" + ep.address().to_string() + ":" + std::to_string(ep.port()) + ")" + ")");
+        LOG_DEBUG("Connect succeeded (" + ep.address().to_string() + ":" + std::to_string(ep.port()) + ")");
         boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
         ws.next_layer().async_handshake(
             boost::asio::ssl::stream_base::client,

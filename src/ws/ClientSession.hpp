@@ -177,12 +177,19 @@ private:
 
     void onMessage(std::string const& str)
     {
-        auto const msg = nlohmann::json::parse(str);
-        LOG_DEBUG("message received: " + msg.dump(2));
-
-        if (checkMessage(msg))
+        try
         {
-            processMessage(msg);
+            auto const msg = nlohmann::json::parse(str);
+            LOG_DEBUG("message received: " + msg.dump(2));
+
+            if (checkMessage(msg))
+            {
+                processMessage(msg);
+            }
+        }
+        catch (nlohmann::json::parse_error const& error)
+        {
+            LOG_ERROR("Invalid JSON payload: " + std::string(error.what()));
         }
     }
 

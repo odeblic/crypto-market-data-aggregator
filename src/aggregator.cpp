@@ -38,11 +38,13 @@ int main(int argc, char ** argv)
         {
             MarketUpdate update;
 
-            while (queue.pop(update))
+            if (!queue.waitPop(update))
             {
-                logger.write(update);
-                aggregator.onUpdate(update);
+                break;
             }
+
+            logger.write(update);
+            aggregator.onUpdate(update);
         }
     });
 

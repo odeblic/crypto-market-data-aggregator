@@ -34,6 +34,14 @@ services:
     networks:
       - trading-net
 
+  statistics:
+    image: statistics
+    container_name: statistics
+    depends_on:
+      - aggregator
+    networks:
+      - trading-net
+
 networks:
   trading-net:
     driver: bridge

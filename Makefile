@@ -1,5 +1,5 @@
 EXCHANGES := binance coinbase okx # bitmex kraken hyperliquid bybit internal
-PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands
+PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands statistics
 BUILDS := release debug debug-asan debug-ubsan debug-tsan debug-lsan
 XTERM := xterm -fa 'Monospace' -fs 12
 
@@ -83,10 +83,9 @@ test: $(addprefix test-,$(BUILDS))
 .PHONY: $(addprefix test-,$(BUILDS))
 $(addprefix test-,$(BUILDS)): test-%:
 	@printf "\033[34mrun all unit tests for build $*\033[0m\n"
-	build/$*/test/aggregator-tests
-	build/$*/test/best-bid-offer-tests
-	build/$*/test/notional-volume-bands-tests
-	build/$*/test/price-bands-tests
+	@for PROGRAM in $(PROGRAMS); do \
+		build/$*/test/$$PROGRAM-tests ; \
+	done
 
 .PHONY: $(addprefix run-,$(BUILDS))
 $(addprefix run-,$(BUILDS)): run-%:
@@ -98,6 +97,8 @@ $(addprefix run-,$(BUILDS)): run-%:
 	PROGRAM="notional-volume-bands"; $(XTERM) -geometry 60x16+150+150 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
 	sleep 0.5
 	PROGRAM="price-bands";           $(XTERM) -geometry 60x16+200+200 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
+	sleep 0.5
+	PROGRAM="statistics";            $(XTERM) -geometry 60x16+250+250 -title "$$PROGRAM" -e "build/$*/src/$$PROGRAM" --config "config/$$PROGRAM.json" &
 
 .PHONY: clean
 clean: $(addprefix clean-,$(BUILDS))

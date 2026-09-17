@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
+#include "core/Stats.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Side.hpp"
 #include "core/Utils.hpp"
@@ -74,5 +75,87 @@ static inline auto toString(Book const& book, size_t const depth = 10) -> std::s
     }
 
     buffer << "+--------------------------+--------------------------+\n";
+    return buffer.str();
+}
+
+static inline auto toString(Stats const& stats) -> std::string
+{
+    std::stringstream buffer;
+    auto const NA = "\033[30;1m      n/a\033[0m\n";
+    buffer << "current ask price: ";
+
+    if (stats.currentAskPrice)
+    {
+        buffer << "\033[31m" << toString(stats.currentAskPrice.value(), false) << "\033[0m\n";
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "current bid price: ";
+
+    if (stats.currentBidPrice)
+    {
+        buffer << "\033[32m" << toString(stats.currentBidPrice.value(), false) << "\033[0m\n";
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "spread:            ";
+
+    if (stats.spread)
+    {
+        buffer << "\033[33m" << toString(stats.spread.value(), false) << "\033[0m\n";
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "crossed book:      ";
+
+    if (stats.crossedBook)
+    {
+        if (stats.crossedBook.value())
+        {
+            buffer << "\033[33m      yes\033[0m\n";
+        }
+        else
+        {
+            buffer << "\033[33m       no\033[0m\n";
+        }
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "lowest ask price:  ";
+
+    if (stats.lowestAskPrice)
+    {
+        buffer << "\033[31m" << toString(stats.lowestAskPrice.value(), false) << "\033[0m\n";
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "highest bid price: ";
+
+    if (stats.highestBidPrice)
+    {
+        buffer << "\033[32m" << toString(stats.highestBidPrice.value(), false) << "\033[0m\n";
+    }
+    else
+    {
+        buffer << NA;
+    }
+
+    buffer << "ask level count:   \033[35m" << std::setw(9) << stats.askLevelCount << "\033[0m\n";
+    buffer << "bid level count:   \033[35m" << std::setw(9) << stats.bidLevelCount << "\033[0m\n\n";
     return buffer.str();
 }

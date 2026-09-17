@@ -35,6 +35,12 @@ target_link_libraries(price-bands PRIVATE
     marketdata_lib
 )
 
+add_executable(statistics statistics.cpp)
+target_link_libraries(statistics PRIVATE
+    nlohmann_json::nlohmann_json
+    marketdata_lib
+)
+
 add_executable(viewer viewer.cpp)
 target_link_libraries(viewer PRIVATE
     nlohmann_json::nlohmann_json

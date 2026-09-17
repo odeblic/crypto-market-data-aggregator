@@ -6,13 +6,13 @@
 
 ## Introduction
 
-This project consists of four major deliverables in the form of executables.
+This project consists of five major deliverables in the form of executables.
 
 One is an aggregator that collects `BTC/USDT` market data from three CEXs
 and consolidates it into a book that it publishes internally.
 
-The other three are clients that subscribe to this book and perform their own
-calculations.
+The other four are clients that subscribe to this book and perform their own
+calculations to serve different purposes.
 
 > DISCLAIMER: In spite of the time spent and the efforts made on this project,
 > it is not considered to be production-ready but aims to advertise on best
@@ -117,6 +117,15 @@ Price Bands Client:
 
 > It gives an idea of the market depth for a certain price.
 
+Statistics:
+
++ connects to the aggregator
++ consumes the market data feed
++ calculates various metrics in live
++ prints the result on the console
+
+> It gives live statistics to have an overview of the market.
+
 ## Build
 
 Everything is designed to run on **Linux** (tested on Debian 12).
@@ -148,6 +157,7 @@ build/debug/test/aggregator-tests
 build/debug/test/best-bid-offer-tests
 build/debug/test/notional-volume-bands-tests
 build/debug/test/price-bands-tests
+build/debug/test/statistics-tests
 ```
 
 ![Unit Tests](./doc/unit-tests.png)
@@ -164,6 +174,7 @@ build/release/src/aggregator --config config/aggregator.json binance coinbase ok
 build/release/src/best-bid-offer --config config/best-bid-offer.json
 build/release/src/notional-volume-bands --config config/notional-volume-bands.json
 build/release/src/price-bands --config config/price-bands.json
+build/release/src/statistics --config config/statistics.json
 ```
 
 Aggregator:
@@ -181,6 +192,10 @@ Notional Volume Bands:
 Price Bands:
 
 ![Price Bands](./doc/price-bands.png)
+
+Statistics:
+
+![Statistics](./doc/statistics.png)
 
 Each binary shows its CLI usage:
 

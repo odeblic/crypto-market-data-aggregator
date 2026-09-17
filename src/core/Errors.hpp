@@ -52,4 +52,9 @@ public:
     : std::invalid_argument("invalid side: " + std::string(side))
     {
     }
+
+    explicit InvalidSide(int side)
+    : std::invalid_argument("invalid side: " + std::to_string(side))
+    {
+    }
 };

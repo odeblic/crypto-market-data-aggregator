@@ -97,7 +97,7 @@ static inline auto toString(Side side) -> std::string
     case Side::BID:
         return "BID";
     default:
-        return "?";
+        throw InvalidSide(static_cast<int>(side));
     }
 }
 

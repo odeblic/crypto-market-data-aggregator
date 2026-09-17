@@ -3,25 +3,25 @@
 #include "core/Errors.hpp"
 #include "core/MarketUpdate.hpp"
 
+#include <boost/algorithm/string.hpp>
+
 #include <algorithm>
-#include <cctype>
 #include <type_traits>
 #include <string>
+#include <string_view>
 
 template <typename T>
-static inline auto fromString(std::string str) -> T
+static inline auto fromString(std::string_view str) -> T
 {
-    std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c) {
-        return std::toupper(c);
-    });
-
     if constexpr (std::is_same_v<T, Side>)
     {
-        if (str == "ASK" || str == "SELL" || str == "OFFER")
+        auto const side = boost::to_upper_copy(std::string{str});
+
+        if (side == "ASK" || side == "SELL" || side == "OFFER")
         {
             return Side::ASK;
         }
-        else if (str == "BID" || str == "BUY")
+        else if (side == "BID" || side == "BUY")
         {
             return Side::BID;
         }
@@ -32,35 +32,37 @@ static inline auto fromString(std::string str) -> T
     }
     else if constexpr (std::is_same_v<T, Exchange>)
     {
-        if (str == "BINANCE")
+        auto const exchange = boost::to_upper_copy(std::string{str});
+
+        if (exchange == "BINANCE")
         {
             return Exchange::BINANCE;
         }
-        else if (str == "BITMEX")
+        else if (exchange == "BITMEX")
         {
             return Exchange::BITMEX;
         }
-        else if (str == "BYBIT")
+        else if (exchange == "BYBIT")
         {
             return Exchange::BYBIT;
         }
-        else if (str == "COINBASE")
+        else if (exchange == "COINBASE")
         {
             return Exchange::COINBASE;
         }
-        else if (str == "HYPERLIQUID")
+        else if (exchange == "HYPERLIQUID")
         {
             return Exchange::HYPERLIQUID;
         }
-        else if (str == "INTERNAL")
+        else if (exchange == "INTERNAL")
         {
             return Exchange::INTERNAL;
         }
-        else if (str == "KRAKEN")
+        else if (exchange == "KRAKEN")
         {
             return Exchange::KRAKEN;
         }
-        else if (str == "OKX")
+        else if (exchange == "OKX")
         {
             return Exchange::OKX;
         }
@@ -71,13 +73,9 @@ static inline auto fromString(std::string str) -> T
     }
     else if constexpr (std::is_same_v<T, Ticker>)
     {
-        if (str.size() > Ticker().max_size() - 1)
-        {
-            str.resize(Ticker().max_size() - 1);
-        }
-
-        Ticker ticker{};
-        std::copy(str.cbegin(), str.cend(), ticker.begin());
+        auto ticker = Ticker{};
+        auto length = std::min(Ticker().max_size() - 1, str.size());
+        std::copy_n(str.cbegin(), length, ticker.begin());
         return ticker;
     }
     else

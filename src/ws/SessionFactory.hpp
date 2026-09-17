@@ -9,6 +9,7 @@
 #include "cex/ExchangeSessionKraken.hpp"
 #include "cex/ExchangeSessionOKX.hpp"
 #include "cfg/ExchangeConfiguration.hpp"
+#include "core/Errors.hpp"
 #include "core/MarketDataSink.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
@@ -19,7 +20,6 @@
 
 #include <functional>
 #include <memory>
-#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -52,7 +52,7 @@ public:
         case Exchange::OKX:
             return makeExchangeSession<ExchangeSessionOKX>(std::move(config));
         default:
-            throw std::runtime_error("exchange could not be dealt with");
+            throw RuntimeError("exchange could not be dealt with");
         }
     }
 

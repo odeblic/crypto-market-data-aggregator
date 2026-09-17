@@ -1,11 +1,11 @@
 #pragma once
 
+#include "core/Errors.hpp"
 #include "core/MarketUpdate.hpp"
 
 #include <algorithm>
 #include <cctype>
 #include <type_traits>
-#include <stdexcept>
 #include <string>
 
 template <typename T>
@@ -27,7 +27,7 @@ static inline auto fromString(std::string str) -> T
         }
         else
         {
-            throw std::runtime_error("invalid side: " + str);
+            throw InvalidSide(str);
         }
     }
     else if constexpr (std::is_same_v<T, Exchange>)
@@ -70,7 +70,7 @@ static inline auto fromString(std::string str) -> T
         }
         else
         {
-            throw std::runtime_error("invalid exchange: " + str);
+            throw InvalidExchange(str);
         }
     }
     else if constexpr (std::is_same_v<T, Ticker>)

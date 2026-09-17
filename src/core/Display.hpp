@@ -1,11 +1,12 @@
 #pragma once
 
+#include "core/Errors.hpp"
+
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <mutex>
-#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -71,7 +72,7 @@ private:
     {
     }
 
-    auto levelToString(LogLevel const level) -> std::string_view
+    auto levelToString(LogLevel level) -> std::string_view
     {
         if (color)
         {
@@ -81,7 +82,7 @@ private:
                 case LogLevel::INFO:    return "\033[32m INFO    \033[0m";
                 case LogLevel::WARNING: return "\033[33m WARNING \033[0m";
                 case LogLevel::ERROR:   return "\033[31m ERROR   \033[0m";
-                default: throw std::runtime_error("invalid log level");
+                default: throw InvalidLogLevel(static_cast<int>(level));
             }
         }
         else
@@ -92,7 +93,7 @@ private:
                 case LogLevel::INFO:    return " INFO    ";
                 case LogLevel::WARNING: return " WARNING ";
                 case LogLevel::ERROR:   return " ERROR   ";
-                default: throw std::runtime_error("invalid log level");
+                default: throw InvalidLogLevel(static_cast<int>(level));
             }
         }
     }

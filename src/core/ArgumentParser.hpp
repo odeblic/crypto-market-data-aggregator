@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Errors.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 
@@ -7,7 +8,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -63,7 +63,7 @@ public:
                     auto const exchangeName = boost::algorithm::to_lower_copy(arg);
                     arguments.exchanges.emplace_back(exchangeId, exchangeName);
                 }
-                catch(std::runtime_error const& e)
+                catch(InvalidExchange const& e)
                 {
                     printUsageAndExit(e.what());
                 }

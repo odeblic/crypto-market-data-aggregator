@@ -38,7 +38,7 @@ public:
         return display;
     }
 
-    void debug(std::string_view const& message)
+    void debug(std::string_view message)
     {
         if (verbose)
         {
@@ -46,17 +46,17 @@ public:
         }
     }
 
-    void info(std::string_view const& message)
+    void info(std::string_view message)
     {
         log(LogLevel::INFO, message);
     }
 
-    void warning(std::string_view const& message)
+    void warning(std::string_view message)
     {
         log(LogLevel::WARNING, message);
     }
 
-    void error(std::string_view const& message)
+    void error(std::string_view message)
     {
         log(LogLevel::ERROR, message);
     }

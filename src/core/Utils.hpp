@@ -32,11 +32,7 @@ static inline auto fromString(std::string str) -> T
     }
     else if constexpr (std::is_same_v<T, Exchange>)
     {
-        if (str == "UNKNOWN")
-        {
-            return Exchange::UNKNOWN;
-        }
-        else if (str == "BINANCE")
+        if (str == "BINANCE")
         {
             return Exchange::BINANCE;
         }
@@ -125,10 +121,8 @@ static inline auto toString(Exchange exchange) -> std::string
         return "KRAKEN";
     case Exchange::OKX:
         return "OKX";
-    case Exchange::UNKNOWN:
-        return "UNKNOWN";
     default:
-        return "?";
+        throw InvalidExchange(static_cast<int>(exchange));
     }
 }
 

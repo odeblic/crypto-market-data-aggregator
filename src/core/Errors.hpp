@@ -29,6 +29,11 @@ public:
     : std::invalid_argument("invalid exchange: " + std::string(exchange))
     {
     }
+
+    explicit InvalidExchange(int exchange)
+    : std::invalid_argument("invalid exchange: " + std::to_string(exchange))
+    {
+    }
 };
 
 class InvalidLogLevel : public std::invalid_argument

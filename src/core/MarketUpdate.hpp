@@ -12,7 +12,6 @@ enum class Side : bool
 
 enum class Exchange : char
 {
-    UNKNOWN,
     BINANCE,
     BITMEX,
     BYBIT,
@@ -21,7 +20,7 @@ enum class Exchange : char
     INTERNAL,
     KRAKEN,
     OKX,
-    MAX,
+    MAX, // keep MAX at the end
 };
 
 struct MarketUpdate

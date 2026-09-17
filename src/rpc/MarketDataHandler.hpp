@@ -42,7 +42,6 @@ protected:
             .quantity = update.quantity(),
             .ticker = fromString<Ticker>(update.symbol()),
             .side = marketdata::Side::BID ? Side::BID : Side::ASK,
-            .exchange = Exchange::UNKNOWN,
         };
     }
 };

@@ -3,7 +3,6 @@
 #include "biz/PriceBands.hpp"
 #include "core/Display.hpp"
 #include "core/Formatter.hpp"
-#include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "rpc/MarketDataFormatter.hpp"
 #include "rpc/MarketDataHandler.hpp"

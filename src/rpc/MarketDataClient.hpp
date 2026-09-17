@@ -2,7 +2,6 @@
 
 #include "core/Book.hpp"
 #include "core/Display.hpp"
-#include "core/MarketUpdate.hpp"
 #include "rpc/MarketDataHandler.hpp"
 
 #include "marketdata.pb.h"

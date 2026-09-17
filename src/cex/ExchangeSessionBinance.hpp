@@ -1,6 +1,9 @@
 #pragma once
 
+#include "core/Exchange.hpp"
 #include "core/MarketUpdate.hpp"
+#include "core/Side.hpp"
+#include "core/Ticker.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
 

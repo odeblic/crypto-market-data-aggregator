@@ -1,5 +1,7 @@
 #include "core/Book.hpp"
+#include "core/Exchange.hpp"
 #include "core/MarketUpdate.hpp"
+#include "core/Side.hpp"
 
 #include <algorithm>
 #include <array>

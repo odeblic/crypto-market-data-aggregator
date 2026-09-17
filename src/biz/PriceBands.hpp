@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
-#include "core/MarketUpdate.hpp"
+#include "core/Side.hpp"
 #include "core/Utils.hpp"
 
 #include <optional>

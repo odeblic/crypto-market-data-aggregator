@@ -2,6 +2,8 @@
 
 #include "core/Book.hpp"
 #include "core/MarketUpdate.hpp"
+#include "core/Side.hpp"
+#include "core/Ticker.hpp"
 #include "core/Utils.hpp"
 
 #include "marketdata.pb.h"

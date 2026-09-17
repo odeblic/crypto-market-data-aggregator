@@ -10,8 +10,8 @@
 #include "cex/ExchangeSessionOKX.hpp"
 #include "cfg/ExchangeConfiguration.hpp"
 #include "core/Errors.hpp"
+#include "core/Exchange.hpp"
 #include "core/MarketDataSink.hpp"
-#include "core/MarketUpdate.hpp"
 #include "core/Utils.hpp"
 #include "ws/ClientSession.hpp"
 

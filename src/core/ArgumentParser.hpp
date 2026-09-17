@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Errors.hpp"
-#include "core/MarketUpdate.hpp"
+#include "core/Exchange.hpp"
 #include "core/Utils.hpp"
 
 #include <boost/algorithm/string.hpp>

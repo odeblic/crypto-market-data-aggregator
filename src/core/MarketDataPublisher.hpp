@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/MarketUpdate.hpp"
-#include "core/Utils.hpp"
 #include "core/MarketDataQueue.hpp"
 #include "core/MarketDataSink.hpp"
 

@@ -7,10 +7,7 @@
 #include <array>
 #include <functional>
 #include <map>
-#include <memory>
-#include <mutex>
 #include <numeric>
-#include <set>
 
 class Aggregator
 {
@@ -53,8 +50,6 @@ public:
 
     void onUpdate(MarketUpdate const& update)
     {
-        std::scoped_lock<std::mutex> lock(mutex);
-
         if (update.side == Side::ASK)
         {
             auto& quantities = priceLevels.ask[update.price];
@@ -80,7 +75,6 @@ public:
     auto generateBook() const -> Book
     {
         auto book = Book{};
-        std::scoped_lock<std::mutex> lock(mutex);
 
         for (auto const& [price, quantities] : priceLevels.ask)
         {
@@ -97,5 +91,4 @@ public:
 
 private:
     PriceLevels priceLevels;
-    std::mutex mutable mutex;
 };

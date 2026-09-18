@@ -12,7 +12,7 @@ public:
     auto push(MarketUpdate const& update) -> bool
     {
         {
-            std::lock_guard lock(mutex);
+            std::scoped_lock lock(mutex);
 
             if (shutdown)
             {
@@ -27,20 +27,6 @@ public:
     }
 
     auto pop(MarketUpdate& update) -> bool
-    {
-        std::lock_guard lock(mutex);
-
-        if (queue.empty())
-        {
-            return false;
-        }
-
-        update = std::move(queue.front());
-        queue.pop();
-        return true;
-    }
-
-    auto waitPop(MarketUpdate& update) -> bool
     {
         std::unique_lock lock(mutex);
         condition.wait(lock, [this]() { return shutdown || !queue.empty(); });
@@ -58,7 +44,7 @@ public:
     void shutdownQueue()
     {
         {
-            std::lock_guard lock(mutex);
+            std::scoped_lock lock(mutex);
             shutdown = true;
         }
 

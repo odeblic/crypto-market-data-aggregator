@@ -32,33 +32,32 @@ int main(int argc, char ** argv)
     WebsocketClient client{publisher};
     MarketDataService service;
 
-    std::jthread thread_print([&]()
+    std::jthread aggregatorThread([&]()
     {
+        auto lastSnapshotTime = std::chrono::steady_clock::time_point{};
+
         while (true)
         {
             MarketUpdate update;
 
-            if (!queue.waitPop(update))
+            if (!queue.pop(update))
             {
                 break;
             }
 
             logger.write(update);
             aggregator.onUpdate(update);
+
+            if (auto const now = std::chrono::steady_clock::now(); now - lastSnapshotTime >= std::chrono::seconds(1))
+            {
+                auto book = aggregator.generateBook();
+                service.updateBook(std::move(book));
+                lastSnapshotTime = now;
+            }
         }
     });
 
-    std::jthread thread_agg([&]()
-    {
-        while (true)
-        {
-            auto book = aggregator.generateBook();
-            service.updateBook(std::move(book));
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    });
-
-    std::jthread thread_gRPC([&]()
+    std::jthread serverThread([&]()
     {
         auto const serverAddress = std::string{config.service.host + ":" + std::to_string(config.service.port)};
         auto builder = grpc::ServerBuilder{};

@@ -7,7 +7,7 @@
             "subscription": {
                 "method": "SUBSCRIBE",
                 "params": [
-                    "btcusdt@depth20@100ms"
+                    "btcusdt@depth@100ms"
                 ],
                 "id": 1
             }

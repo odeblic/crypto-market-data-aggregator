@@ -35,10 +35,10 @@ int main(int argc, char ** argv)
     {
         auto lastSnapshotTime = std::chrono::steady_clock::time_point{};
 
-        auto const captions = Captions
+        auto captions = Captions
         {
             .title = "Aggregated Book (top 20)",
-            .symbol = "BTC/USDT",
+            .symbol = "",
             .askLabels = {},
             .bidLabels = {},
             .maxLabelSize = 0,
@@ -53,16 +53,17 @@ int main(int argc, char ** argv)
                 break;
             }
 
-            LOG_DEBUG("update received from " + toString(update.exchange) + " for symbol " + toString(update.ticker) + ": " +
+            auto const symbol = toString(update.ticker);
+            LOG_DEBUG("update received from " + toString(update.exchange) + " for symbol " + symbol + ": " +
                       toString(update.side) + " " + toString(update.quantity, true) + " @" + toString(update.price, false));
-
             aggregator.onUpdate(update);
 
             if (auto const now = std::chrono::steady_clock::now(); now - lastSnapshotTime >= std::chrono::seconds(1))
             {
+                captions.symbol = symbol;
                 auto book = aggregator.generateBook();
                 Display::getInstance().show(toString(book, captions, 20));
-                service.updateBook(std::move(book));
+                service.overwriteBook(std::move(book), std::move(symbol));
                 lastSnapshotTime = now;
             }
         }

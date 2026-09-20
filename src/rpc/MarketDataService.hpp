@@ -42,7 +42,7 @@ public:
         return grpc::Status::OK;
     }
 
-    void updateBook(Book book, std::string symbol = "BTC/USDT")
+    void overwriteBook(Book book, std::string symbol)
     {
         std::scoped_lock<std::mutex> lock(mutex);
         this->symbol = symbol;

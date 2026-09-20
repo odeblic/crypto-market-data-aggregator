@@ -18,22 +18,22 @@ public:
     : verbose(verbose)
     {
         captions.title = "Best Bid Offer";
-        captions.symbol = "BTC/USDT";
     }
 
-    virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
+    virtual void onSnapshot(marketdata::Snapshot const& snapshot) override
     {
         if (verbose)
         {
             Display::getInstance().show(toString(snapshot));
         }
 
-        auto originalBook = makeBook(snapshot);
+        auto [symbol, originalBook] = makeSnapshot(snapshot);
         auto syntheticBook = computeBestBidOffer(originalBook);
+        captions.symbol = symbol;
         Display::getInstance().show(toString(syntheticBook, captions));
     }
 
-    virtual void onDiff(marketdata::Diff const& diff) const override
+    virtual void onDiff(marketdata::Diff const& diff) override
     {
         if (verbose)
         {

@@ -3,23 +3,22 @@
 #include "core/Book.hpp"
 #include "core/Diff.hpp"
 #include "core/Side.hpp"
+#include "core/Snapshot.hpp"
 #include "core/Ticker.hpp"
 #include "core/Utils.hpp"
 
 #include "marketdata.pb.h"
 #include "marketdata.grpc.pb.h"
 
-#include <memory>
-
 class MarketDataHandler
 {
 public:
-    virtual void onSnapshot(marketdata::Snapshot const& snapshot) const = 0;
+    virtual void onSnapshot(marketdata::Snapshot const& snapshot) = 0;
 
-    virtual void onDiff(marketdata::Diff const& diff) const = 0;
+    virtual void onDiff(marketdata::Diff const& diff) = 0;
 
 protected:
-    static auto makeBook(marketdata::Snapshot const& snapshot) -> Book
+    static auto makeSnapshot(marketdata::Snapshot const& snapshot) -> Snapshot
     {
         auto book = Book{};
 
@@ -33,16 +32,20 @@ protected:
             book.bid.emplace_back(bid.price(), bid.quantity());
         }
 
-        return book;
+        return
+        {
+            .symbol = snapshot.symbol(),
+            .book = book,
+        };
     }
 
     static auto makeDiff(marketdata::Diff const& diff) -> Diff
     {
         return
         {
+            .symbol = diff.symbol(),
             .price = diff.price(),
             .quantity = diff.quantity(),
-            .ticker = fromString<Ticker>(diff.symbol()),
             .side = marketdata::Side::BID ? Side::BID : Side::ASK,
         };
     }

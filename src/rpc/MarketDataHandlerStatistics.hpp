@@ -18,19 +18,19 @@ public:
     {
     }
 
-    virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
+    virtual void onSnapshot(marketdata::Snapshot const& snapshot) override
     {
         if (verbose)
         {
             Display::getInstance().show(toString(snapshot));
         }
 
-        auto originalBook = makeBook(snapshot);
+        auto [symbol, originalBook] = makeSnapshot(snapshot);
         auto values = statistics.compute(originalBook);
         Display::getInstance().show(toString(values));
     }
 
-    virtual void onDiff(marketdata::Diff const& diff) const override
+    virtual void onDiff(marketdata::Diff const& diff) override
     {
         if (verbose)
         {
@@ -40,6 +40,5 @@ public:
 
 private:
     bool verbose{false};
-    // TODO: amend the design to avoid the mutable
-    mutable Statistics statistics;
+    Statistics statistics;
 };

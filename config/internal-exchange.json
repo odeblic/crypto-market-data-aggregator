@@ -1,11 +1,4 @@
 {
-    "feed": {
-        "symbol": "BTC/USDT",
-        "price": 75000.0,
-        "quantity": 0.5,
-        "spread": 10.0,
-        "depth": 5
-    },
     "service": {
         "host": "0.0.0.0",
         "port": 8080,

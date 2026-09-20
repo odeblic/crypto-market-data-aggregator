@@ -275,7 +275,7 @@ Code maintenability:
 + add Doxygen comments to document public interfaces
 + modernize formatting using `std::format`
 + separate the code in `.hpp` and `.cpp` files
-+ have better neming for files and classes to make them more meaningful
++ have better naming for files and classes to make them more meaningful
 + groupd CEX-specific source files by exchange (cex/bitmex/*.hpp)
 + add namespaces to separate symbols by business
 

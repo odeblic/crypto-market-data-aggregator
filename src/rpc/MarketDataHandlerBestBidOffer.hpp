@@ -1,6 +1,7 @@
 #pragma once
 
 #include "biz/BestBidOffer.hpp"
+#include "core/Captions.hpp"
 #include "core/Display.hpp"
 #include "core/Formatter.hpp"
 #include "core/Utils.hpp"
@@ -16,6 +17,8 @@ public:
     MarketDataHandlerBestBidOffer(bool verbose)
     : verbose(verbose)
     {
+        captions.title = "Best Bid Offer";
+        captions.symbol = "BTC/USDT";
     }
 
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
@@ -27,7 +30,7 @@ public:
 
         auto originalBook = makeBook(snapshot);
         auto syntheticBook = computeBestBidOffer(originalBook);
-        Display::getInstance().show(toString(syntheticBook));
+        Display::getInstance().show(toString(syntheticBook, captions));
     }
 
     virtual void onUpdate(marketdata::Update const& update) const override
@@ -40,4 +43,5 @@ public:
 
 private:
     bool verbose{false};
+    Captions captions;
 };

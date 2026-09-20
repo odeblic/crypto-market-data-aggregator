@@ -1,6 +1,7 @@
 #pragma once
 
 #include "biz/PriceBands.hpp"
+#include "core/Captions.hpp"
 #include "core/Display.hpp"
 #include "core/Formatter.hpp"
 #include "core/Utils.hpp"
@@ -18,6 +19,15 @@ public:
     MarketDataHandlerPriceBands(std::span<int const> bandValues, bool verbose)
     : bands(bandValues), verbose(verbose)
     {
+        captions.title = "Price Bands";
+        captions.symbol = "BTC/USDT";
+        captions.maxLabelSize = 10;
+
+        for (auto value : bandValues)
+        {
+            captions.askLabels.push_back(humanizeBps(value, false));
+            captions.bidLabels.push_back(humanizeBps(value, true));
+        }
     }
 
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const override
@@ -29,7 +39,7 @@ public:
 
         auto originalBook = makeBook(snapshot);
         auto syntheticBook = bands.compute(originalBook);
-        Display::getInstance().show(toString(syntheticBook));
+        Display::getInstance().show(toString(syntheticBook, captions));
     }
 
     virtual void onUpdate(marketdata::Update const& update) const override
@@ -42,5 +52,6 @@ public:
 
 private:
     PriceBands bands;
+    Captions captions;
     bool verbose{false};
 };

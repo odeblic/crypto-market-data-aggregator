@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
+#include "core/Captions.hpp"
 #include "core/Stats.hpp"
 #include "core/MarketUpdate.hpp"
 #include "core/Side.hpp"
@@ -9,6 +10,73 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
+
+static inline auto humanizeNotional(double value) -> std::string
+{
+    std::stringstream buffer;
+
+    if (value >= 1'000'000.0)
+    {
+        buffer << std::fixed << std::setprecision(1) << value / 1'000'000.0 << "M";
+    }
+    else if (value >= 1'000.0)
+    {
+        buffer << std::fixed << std::setprecision(1) << value / 1'000.0 << "K";
+    }
+    else
+    {
+        buffer << std::fixed << std::setprecision(1) << value;
+    }
+
+    return buffer.str();
+}
+
+static inline auto humanizeBps(int bps, bool minus) -> std::string
+{
+    if (minus)
+    {
+        return "-" + std::to_string(bps) + " bps";
+    }
+    else
+    {
+        return "+" + std::to_string(bps) + " bps";
+    }
+}
+
+static inline auto capString(std::string_view str, size_t max) -> std::string
+{
+    if (max < 3)
+    {
+        return std::string(str.substr(0, max));
+    }
+    else if (str.size() <= max)
+    {
+        return std::string(str);
+    }
+    else
+    {
+        return std::string(str.substr(0, max - 3)) + "...";
+    }
+}
+
+static inline auto centerString(std::string_view str, size_t size) -> std::string
+{
+    if (str.length() >= size)
+    {
+        return std::string(str.substr(0, size));
+    }
+
+    size_t const totalPadding = size - str.length();
+    size_t const leftPadding = totalPadding / 2;
+    size_t const rightPadding = totalPadding - leftPadding;
+    std::string centered;
+    centered.reserve(size);
+    centered.append(leftPadding, ' ');
+    centered.append(str);
+    centered.append(rightPadding, ' ');
+    return centered;
+}
 
 static inline auto toString(double value, bool precise) -> std::string
 {
@@ -30,24 +98,70 @@ static inline auto toString(MarketUpdate const& update) -> std::string
     return buffer.str();
 }
 
-static inline auto toString(Book const& book, size_t const depth = 10) -> std::string
+static inline auto toString(Book const& book, Captions const& captions = {}, size_t const depth = 0) -> std::string
 {
     std::stringstream buffer;
     size_t level = 0;
-    buffer << "\n+--------------------------+--------------------------+\n";
+    bool const hasLabels = captions.askLabels.size() > 0 || captions.bidLabels.size() > 0;
+    auto const margin = std::string((hasLabels ? captions.maxLabelSize + 2 : 0), ' ');
 
-    while ((level < book.ask.size() || level < book.bid.size()) && level < depth)
+    if (!captions.symbol.empty())
     {
+        buffer << "\n\n"
+               << margin
+               << "                       <\033[35m"
+               << std::setw(8)
+               << captions.symbol
+               << "\033[0m>\n"
+               << margin
+               << "                           |\n"
+               << margin
+               << "+--------------------------+--------------------------+\n";
+    }
+    else
+    {
+        buffer << "\n\n"
+               << margin
+               << "+--------------------------+--------------------------+\n";
+    }
+
+    if (!captions.title.empty())
+    {
+        buffer << margin
+               << "| \033[34m"
+               << centerString(captions.title, 51)
+               << "\033[0m |\n"
+               << margin
+               << "+--------------------------+--------------------------+\n";
+    }
+
+    while ((level < book.ask.size() || level < book.bid.size()) && (depth == 0 || level < depth))
+    {
+        if (hasLabels)
+        {
+            if (level < captions.bidLabels.size())
+            {
+                buffer << "\033[34m"
+                    << std::setw(captions.maxLabelSize)
+                    << captions.bidLabels[level]
+                    << "  \033[0m";
+            }
+            else
+            {
+                buffer << margin;
+            }
+        }
+
         buffer << "| ";
 
         if (level < book.bid.size())
         {
             auto const& quote = book.bid[level];
             buffer << "\033[32m"
-                    << toString(quote.quantity, true)
-                    << "\033[0m  \033[32m"
-                    << toString(quote.price, false)
-                    << "\033[0m";
+                   << toString(quote.quantity, true)
+                   << "\033[0m  \033[32m"
+                   << toString(quote.price, false)
+                   << "\033[0m";
         }
         else
         {
@@ -60,21 +174,35 @@ static inline auto toString(Book const& book, size_t const depth = 10) -> std::s
         {
             auto const& quote = book.ask[level];
             buffer << "\033[31m"
-                    << toString(quote.price, false)
-                    << "\033[0m  \033[31m"
-                    << toString(quote.quantity, true)
-                    << "\033[0m";
+                   << toString(quote.price, false)
+                   << "\033[0m  \033[31m"
+                   << toString(quote.quantity, true)
+                   << "\033[0m";
         }
         else
         {
             buffer << "                        ";
         }
 
-        buffer << " |\n";
+        buffer << " |";
+
+        if (hasLabels)
+        {
+            if (level < captions.askLabels.size())
+            {
+                buffer << "  \033[34m"
+                       << std::setw(captions.maxLabelSize)
+                       << captions.askLabels[level]
+                       << "\033[0m";
+            }
+        }
+
+        buffer << "\n";
         level++;
     }
 
-    buffer << "+--------------------------+--------------------------+\n";
+    buffer << margin
+           << "+--------------------------+--------------------------+\n";
     return buffer.str();
 }
 

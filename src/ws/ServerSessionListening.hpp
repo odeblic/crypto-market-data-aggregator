@@ -26,7 +26,6 @@ public:
       acceptor{boost::asio::make_strand(ioctx)}
     {
         boost::beast::error_code ec;
-
         acceptor.open(endpoint.protocol(), ec);
 
         if (ec)
@@ -35,6 +34,7 @@ public:
             return;
         }
 
+        LOG_DEBUG("Socket creation succeeded");
         acceptor.set_option(boost::asio::socket_base::reuse_address(true), ec);
 
         if (ec)
@@ -43,6 +43,7 @@ public:
             return;
         }
 
+        LOG_DEBUG("Set option succeeded");
         acceptor.bind(endpoint, ec);
 
         if (ec)
@@ -51,6 +52,7 @@ public:
             return;
         }
 
+        LOG_DEBUG("Bind succeeded");
         acceptor.listen(boost::asio::socket_base::max_listen_connections, ec);
 
         if (ec)
@@ -59,7 +61,7 @@ public:
             return;
         }
 
-        LOG_DEBUG("Listen OK");
+        LOG_DEBUG("Listen succeeded");
     }
 
     void run()
@@ -83,7 +85,6 @@ private:
             std::make_shared<ServerSessionConnected>(std::move(socket), sslctx)->run();
         }
 
-        LOG_DEBUG("Accepting...");
         doAccept();
     }
 

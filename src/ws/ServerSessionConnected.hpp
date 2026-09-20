@@ -56,7 +56,7 @@ private:
     {
         if (ec)
         {
-            LOG_ERROR("SSL handshake failed" + ec.message());
+            LOG_ERROR("SSL handshake failed: " + ec.message());
             return;
         }
 

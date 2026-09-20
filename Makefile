@@ -1,7 +1,18 @@
 EXCHANGES := binance coinbase okx # bitmex kraken hyperliquid bybit internal
 PROGRAMS := aggregator best-bid-offer notional-volume-bands price-bands statistics
 BUILDS := release debug debug-asan debug-ubsan debug-tsan debug-lsan
-XTERM := xterm -fa 'Monospace' -fs 12
+
+ifeq ($(JOBS),1)
+    JOB_COUNT := $(shell nproc)
+else
+    JOB_COUNT := 1
+endif
+
+ifeq ($(HOLD),1)
+	XTERM := xterm -fa 'Monospace' -fs 12 -hold
+else
+	XTERM := xterm -fa 'Monospace' -fs 12
+endif
 
 .PHONY: help
 help:
@@ -26,6 +37,10 @@ help:
 	@for BUILD in $(BUILDS); do \
 		printf "\033[33m  $$BUILD\033[0m\n" ; \
 	done
+	@printf "\n"
+	@printf "Environment variables:\n"
+	@printf "\033[36m  JOBS\033[0m        \033[33m1\033[0m to build with jobs, \033[33m0\033[0m otherwise\n"
+	@printf "\033[36m  HOLD\033[0m        \033[33m1\033[0m to hold xterm after runs, \033[33m0\033[0m otherwise\n"
 
 .PHONY: all
 all: configure build test
@@ -46,7 +61,7 @@ build: $(addprefix build-,$(BUILDS))
 .PHONY: $(addprefix build-,$(BUILDS))
 $(addprefix build-,$(BUILDS)): build-%:
 	@printf "\033[34mbuild all artifacts for build $*\033[0m\n"
-	cmake --build "build/$*" -- -j$(nproc)
+	cmake --build "build/$*" -- -j$(JOB_COUNT)
 
 .PHONY: docker
 docker:

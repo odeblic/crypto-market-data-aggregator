@@ -53,29 +53,29 @@ public:
         }
     }
 
-    void StreamMarketDataUpdates(std::string const& symbol, uint32_t depth = 5)
+    void StreamMarketDataDiffs(std::string const& symbol, uint32_t depth = 5)
     {
         marketdata::Request request;
         request.set_symbol(symbol);
         request.set_depth(depth);
 
         grpc::ClientContext context;
-        marketdata::Update update;
+        marketdata::Diff diff;
 
-        std::unique_ptr<grpc::ClientReader<marketdata::Update>> const reader(
-            stub->StreamMarketDataUpdates(&context, request)
+        std::unique_ptr<grpc::ClientReader<marketdata::Diff>> const reader(
+            stub->StreamMarketDataDiffs(&context, request)
         );
 
-        while (reader->Read(&update))
+        while (reader->Read(&diff))
         {
-            handler.get().onUpdate(update);
+            handler.get().onDiff(diff);
         }
 
         grpc::Status const status = reader->Finish();
 
         if (!status.ok())
         {
-            LOG_ERROR("StreamMarketDataUpdates RPC failed: " + status.error_message());
+            LOG_ERROR("StreamMarketDataDiffs RPC failed: " + status.error_message());
         }
     }
 

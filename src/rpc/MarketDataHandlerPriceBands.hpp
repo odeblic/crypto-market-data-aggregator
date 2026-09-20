@@ -42,11 +42,11 @@ public:
         Display::getInstance().show(toString(syntheticBook, captions));
     }
 
-    virtual void onUpdate(marketdata::Update const& update) const override
+    virtual void onDiff(marketdata::Diff const& diff) const override
     {
         if (verbose)
         {
-            Display::getInstance().show(toString(update));
+            Display::getInstance().show(toString(diff));
         }
     }
 

@@ -26,14 +26,14 @@ static inline auto toString(marketdata::Snapshot const& snapshot) -> std::string
     return buffer.str();
 }
 
-static inline auto toString(marketdata::Update const& update) -> std::string
+static inline auto toString(marketdata::Diff const& diff) -> std::string
 {
     std::stringstream buffer;
-    buffer << "update for symbol: " << update.symbol()
+    buffer << "diff for symbol: " << diff.symbol()
            << '\n'
-           << (update.side() == marketdata::Side::BID ? "BID" : "ASK")
-           << "  price:" << toString(update.price(), false)
-           << "  quantity:" << toString(update.quantity(), true)
+           << (diff.side() == marketdata::Side::BID ? "BID" : "ASK")
+           << "  price:" << toString(diff.price(), false)
+           << "  quantity:" << toString(diff.quantity(), true)
            << '\n';
     return buffer.str();
 }

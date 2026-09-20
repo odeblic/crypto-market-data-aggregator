@@ -7,7 +7,7 @@ enum Side {
     BID = 1;
 }
 
-message Update {
+message Diff {
     string symbol = 1;
     double price = 2;
     double quantity = 3;
@@ -32,5 +32,5 @@ message Request {
 
 service Provider {
   rpc StreamMarketDataSnapshots (Request) returns (stream Snapshot);
-  rpc StreamMarketDataUpdates (Request) returns (stream Update);
+  rpc StreamMarketDataDiffs (Request) returns (stream Diff);
 }

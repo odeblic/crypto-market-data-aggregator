@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Book.hpp"
-#include "core/MarketUpdate.hpp"
+#include "core/Diff.hpp"
 #include "core/Side.hpp"
 #include "core/Ticker.hpp"
 #include "core/Utils.hpp"
@@ -16,7 +16,7 @@ class MarketDataHandler
 public:
     virtual void onSnapshot(marketdata::Snapshot const& snapshot) const = 0;
 
-    virtual void onUpdate(marketdata::Update const& update) const = 0;
+    virtual void onDiff(marketdata::Diff const& diff) const = 0;
 
 protected:
     static auto makeBook(marketdata::Snapshot const& snapshot) -> Book
@@ -36,13 +36,13 @@ protected:
         return book;
     }
 
-    static auto makeMarketUpdate(marketdata::Update const& update) -> MarketUpdate
+    static auto makeDiff(marketdata::Diff const& diff) -> Diff
     {
         return
         {
-            .price = update.price(),
-            .quantity = update.quantity(),
-            .ticker = fromString<Ticker>(update.symbol()),
+            .price = diff.price(),
+            .quantity = diff.quantity(),
+            .ticker = fromString<Ticker>(diff.symbol()),
             .side = marketdata::Side::BID ? Side::BID : Side::ASK,
         };
     }

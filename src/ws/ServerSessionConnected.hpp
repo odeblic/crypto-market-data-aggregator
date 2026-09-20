@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/beast.hpp>
@@ -8,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <queue>
+#include <string>
 #include <utility>
 
 class ServerSessionConnected : public std::enable_shared_from_this<ServerSessionConnected>
@@ -30,13 +32,19 @@ public:
         );
     }
 
-    static inline auto extractTicker(std::string const target) -> std::string
+    inline auto getPath() const -> std::string
     {
-        std::string const prefix{"/marketdata/"};
+        return std::string(req.target());
+    }
 
-        if (target.rfind(prefix, 0) == 0 && target.length() > prefix.length())
+    inline auto getTicker() const -> std::string
+    {
+        auto const path = getPath();
+        std::string_view prefix{"/marketdata/"};
+
+        if (path.rfind(prefix, 0) == 0 && path.length() > prefix.length())
         {
-            return target.substr(prefix.length());
+            return boost::to_upper_copy(path.substr(prefix.length()));
         }
 
         return "";
@@ -63,13 +71,66 @@ private:
         LOG_DEBUG("SSL handshake succeeded");
         boost::beast::get_lowest_layer(ws).expires_never();
         ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(boost::beast::role_type::server));
-        ws.set_option(boost::beast::websocket::stream_base::decorator(
-            [](boost::beast::websocket::response_type& res)
+        doRead();
+    }
+
+    void doRead()
+    {
+        boost::beast::http::async_read(
+            ws.next_layer(),
+            buffer,
+            req,
+            boost::beast::bind_front_handler(&ServerSessionConnected::onRead, shared_from_this()));
+    }
+
+    void onRead(boost::beast::error_code ec, std::size_t byteCount)
+    {
+        boost::ignore_unused(byteCount);
+
+        if (ec)
+        {
+            LOG_ERROR("HTTP read failed: " + ec.message());
+            return;
+        }
+
+        LOG_DEBUG("HTTP read succeeded");
+
+        if(boost::beast::websocket::is_upgrade(req))
+        {
+            auto const path = getPath();
+
+            if (!path.starts_with("/marketdata/"))
             {
-                res.set(boost::beast::http::field::server, "MarketDataServer");
-            })
-        );
-        ws.async_accept(boost::beast::bind_front_handler(&ServerSessionConnected::onHandshakeWS, shared_from_this()));
+                LOG_ERROR("Bad path requested by WS client: " + path);
+                namespace http = boost::beast::http;
+                http::response<http::string_body> res{http::status::not_found, req.version()};
+                res.set(http::field::server, "InternalExchange");
+                res.set(http::field::content_type, "text/plain");
+                res.keep_alive(false);
+                res.body() = "The requested path is not a valid WebSocket endpoint.\n";
+                res.prepare_payload();
+                http::write(ws.next_layer(), res, ec);
+
+                if (ec)
+                {
+                    LOG_ERROR("HTTP write failed: " + ec.message());
+                }
+                else
+                {
+                    LOG_DEBUG("HTTP write succeeded");
+                }
+
+                return;
+            }
+
+            LOG_DEBUG("Path requested by WS client: " + path);
+            auto const ticker = getTicker();
+            LOG_INFO("Subscribed ticker: " + ticker);
+
+            ws.async_accept(
+                req,
+                boost::beast::bind_front_handler(&ServerSessionConnected::onHandshakeWS, shared_from_this()));
+        }
     }
 
     void onHandshakeWS(boost::beast::error_code const ec)
@@ -86,10 +147,10 @@ private:
 
     void generateMessages()
     {
-        auto const ticker = "BTCUSDT";
-
-        auto addMessage = [&](std::string side, double price, double quantity)
+        auto addMessage = [this](std::string side, double price, double quantity)
         {
+            auto const ticker = getTicker();
+
             nlohmann::json const message = {
                 {"ticker", ticker},
                 {"side", side},
@@ -196,6 +257,7 @@ private:
     }
 
     boost::beast::websocket::stream<boost::asio::ssl::stream<boost::beast::tcp_stream>> ws;
+    boost::beast::http::request<boost::beast::http::string_body> req;
     boost::beast::flat_buffer buffer;
     boost::asio::steady_timer timer;
     std::queue<nlohmann::json> messages;

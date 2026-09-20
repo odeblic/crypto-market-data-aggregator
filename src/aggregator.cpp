@@ -3,8 +3,8 @@
 #include "cfg/Loader.hpp"
 #include "core/ArgumentParser.hpp"
 #include "core/Display.hpp"
+#include "core/Formatter.hpp"
 #include "core/MarketUpdate.hpp"
-#include "core/MarketDataLogger.hpp"
 #include "core/MarketDataPublisher.hpp"
 #include "core/MarketDataQueue.hpp"
 #include "rpc/MarketDataService.hpp"
@@ -27,7 +27,6 @@ int main(int argc, char ** argv)
     LOG_INFO("starting the aggregator to consolidate market data from exchanges into a single book");
     MarketDataQueue queue;
     MarketDataPublisher publisher{queue};
-    MarketDataLogger logger;
     Aggregator aggregator;
     WebsocketClient client{publisher};
     MarketDataService service;
@@ -35,6 +34,15 @@ int main(int argc, char ** argv)
     std::jthread aggregatorThread([&]()
     {
         auto lastSnapshotTime = std::chrono::steady_clock::time_point{};
+
+        auto const captions = Captions
+        {
+            .title = "Aggregated Book (top 20)",
+            .symbol = "BTC/USDT",
+            .askLabels = {},
+            .bidLabels = {},
+            .maxLabelSize = 0,
+        };
 
         while (true)
         {
@@ -45,12 +53,15 @@ int main(int argc, char ** argv)
                 break;
             }
 
-            logger.write(update);
+            LOG_DEBUG("update received from " + toString(update.exchange) + " for symbol " + toString(update.ticker) + ": " +
+                      toString(update.side) + " " + toString(update.quantity, true) + " @" + toString(update.price, false));
+
             aggregator.onUpdate(update);
 
             if (auto const now = std::chrono::steady_clock::now(); now - lastSnapshotTime >= std::chrono::seconds(1))
             {
                 auto book = aggregator.generateBook();
+                Display::getInstance().show(toString(book, captions, 20));
                 service.updateBook(std::move(book));
                 lastSnapshotTime = now;
             }

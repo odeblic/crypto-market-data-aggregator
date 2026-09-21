@@ -72,7 +72,8 @@ private:
             return;
         }
 
-        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        using namespace std::literals;
+        boost::beast::get_lowest_layer(ws).expires_after(30s);
         boost::beast::get_lowest_layer(ws).async_connect(
             results,
             boost::beast::bind_front_handler(&ClientSession::onConnect, shared_from_this())
@@ -88,7 +89,8 @@ private:
         }
 
         LOG_DEBUG("Connect succeeded (" + ep.address().to_string() + ":" + std::to_string(ep.port()) + ")");
-        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        using namespace std::literals;
+        boost::beast::get_lowest_layer(ws).expires_after(30s);
         ws.next_layer().async_handshake(
             boost::asio::ssl::stream_base::client,
             boost::beast::bind_front_handler(&ClientSession::onHandshakeSSL, shared_from_this())

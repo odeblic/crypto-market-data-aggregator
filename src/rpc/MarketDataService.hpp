@@ -35,7 +35,8 @@ public:
                 //return Status(grpc::StatusCode::CANCELLED, "Client disconnected");
             }
 
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            using namespace std::literals;
+            std::this_thread::sleep_for(1s);
         }
 
         LOG_DEBUG("End of subscription for symbol: " + request->symbol());

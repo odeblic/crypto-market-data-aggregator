@@ -53,7 +53,8 @@ public:
 private:
     void onRun()
     {
-        boost::beast::get_lowest_layer(ws).expires_after(std::chrono::seconds(30));
+        using namespace std::literals;
+        boost::beast::get_lowest_layer(ws).expires_after(30s);
         ws.next_layer().async_handshake(
             boost::asio::ssl::stream_base::server,
             boost::beast::bind_front_handler(&ServerSessionConnected::onHandshakeSSL, shared_from_this())
@@ -202,7 +203,8 @@ private:
 
     void schedulePublishing()
     {
-        timer.expires_after(std::chrono::milliseconds(1000));
+        using namespace std::literals;
+        timer.expires_after(1s);
         timer.async_wait(
             boost::beast::bind_front_handler(&ServerSessionConnected::onScheduleEvent, shared_from_this()));
     }

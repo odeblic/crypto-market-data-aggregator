@@ -46,6 +46,7 @@ int main(int argc, char ** argv)
 
         while (true)
         {
+            using namespace std::literals;
             MarketUpdate update;
 
             if (!queue.pop(update))
@@ -58,7 +59,7 @@ int main(int argc, char ** argv)
                       toString(update.side) + " " + toString(update.quantity, true) + " @" + toString(update.price, false));
             aggregator.onUpdate(update);
 
-            if (auto const now = std::chrono::steady_clock::now(); now - lastSnapshotTime >= std::chrono::seconds(1))
+            if (auto const now = std::chrono::steady_clock::now(); now - lastSnapshotTime >= 1s)
             {
                 captions.symbol = symbol;
                 auto book = aggregator.generateBook();
